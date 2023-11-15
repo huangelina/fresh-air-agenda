@@ -1,6 +1,27 @@
 steps = [
     [
-        # "Up" SQL statement
+
+        """
+        CREATE TABLE users (
+            id SERIAL PRIMARY KEY NOT NULL,
+            first VARCHAR(1000) NOT NULL,
+            last VARCHAR(1000) NOT NULL,
+            username VARCHAR(1000) NOT NULL,
+            password VARCHAR(1000) NOT NULL,
+            email VARCHAR(1000) NOT NULL,
+            location VARCHAR(1000),
+            goal SMALLINT DEFAULT 0,
+            avatar_picture VARCHAR(1000),
+            bio TEXT
+        );
+        """,
+
+        """
+        DROP TABLE USERS;
+        """
+    ],
+
+    [
         """
         CREATE TABLE events (
             id SERIAL PRIMARY KEY NOT NULL,
@@ -12,34 +33,38 @@ steps = [
             hosted_by INT REFERENCES users("id")
         );
         """,
-        # "Down" SQL statement
+
         """
         DROP TABLE events;
-        """,
+        """
+    ],
 
+    [
         """
         CREATE TABLE attendance (
-            FOREIGN KEY (user_id) REFERENCES users("id"),
-            FOREIGN KEY (event_id) REFERENCES events("id"),
+            user_id INT REFERENCES users("id"),
+            event_id INT REFERENCES events("id")
         );
         """,
-        # "Down" SQL statement
+
         """
         DROP TABLE attendance;
-        """,
+        """
 
+    ],
+
+    [
         """
         CREATE TABLE timelogs (
             date DATE NOT NULL,
             goal INT NOT NULL,
             time_outside INT DEFAULT 0,
-            FOREIGN KEY (user_id) REFERENCES users("id")
+            user_id INT REFERENCES users("id")
         );
         """,
-        # "Down" SQL statement
+
         """
         DROP TABLE timelogs;
-        """,
-
-    ],
+        """
+    ]
 ]
