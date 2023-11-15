@@ -11,7 +11,7 @@ steps = [
             email VARCHAR(1000) NOT NULL,
             location VARCHAR(1000),
             goal SMALLINT DEFAULT 0,
-            avatar_picture VARCHAR(1000),
+            avatar_picture VARCHAR(1000) DEFAULT 'https://merriam-webster.com/assets/mw/images/article/art-wap-article-main/egg-3442-e1f6463624338504cd021bf23aef8441@1x.jpg',
             bio TEXT
         );
         """,
@@ -28,8 +28,8 @@ steps = [
             name VARCHAR(1000) NOT NULL,
             date TIMESTAMP NOT NULL,
             image_url VARCHAR(1000),
-            description VARCHAR(1000) NOT NULL,
-            location VARCHAR(1000),
+            description VARCHAR(1000),
+            location VARCHAR(1000) NOT NULL,
             hosted_by INT REFERENCES users("id")
         );
         """,
