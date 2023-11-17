@@ -5,6 +5,7 @@ volumes:
 services:
   fastapi:
     environment:
+      SIGNING_KEY: 5613d799c5f98ee4de96ce0f4e688432beef7b9081e4edbbfe57ff867a57a6a7
       CORS_HOST: http://localhost:3000
       DATABASE_URL: postgresql://faa_user:secret@postgres/faa_db
     build:

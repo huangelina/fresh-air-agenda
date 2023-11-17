@@ -28,7 +28,41 @@ class UserOut(BaseModel):
     bio: Optional[str]
 
 
+class UserOutWithPassword(UserOut):
+    hashed_password: str
+
+
 class UserQueries:
+    def get(self, username: str) -> UserOutWithPassword:
+        try:
+            with pool.connection() as conn:
+                with conn.cursor() as db:
+                    result = db.execute(
+                        """
+                        SELECT
+                        first, 
+                        last, 
+                        username, 
+                        hashed_password, 
+                        email, 
+                        location, 
+                        goal, 
+                        avatar_picture, 
+                        bio
+                        FROM users
+                        WHERE username = %s
+                        """,
+                        [username],
+                    )
+                    record = result.fetchone()
+                    if record is None:
+                        return None
+                    return self.record_to_user_out(record)
+        except Exception:
+            return {"message": "Could not get account"}
+        
+    pass
+
     # def get_one(self, vacation_id: int) -> Optional[VacationOut]:
     #     try:
     #         # connect the database
@@ -138,7 +172,8 @@ class UserQueries:
     #         print(e)
     #         return {"message": "Could not get all vacations"}
 
-    def create(self, user: UserIn) -> Union[UserOut, Error]:
+    def create(self, user: UserIn,
+               hashed_password: str) -> UserOutWithPassword:
         try:
             # connect the database
             with pool.connection() as conn:
@@ -148,7 +183,7 @@ class UserQueries:
                     result = db.execute(
                         """
                         INSERT INTO users
-                            (first, last, username, password, email, location, goal, avatar_picture, bio)
+                            (first, last, username, hashed_password, email, location, goal, avatar_picture, bio)
                         VALUES
                             (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                         RETURNING id;
@@ -157,7 +192,7 @@ class UserQueries:
                             user.first,
                             user.last,
                             user.username,
-                            user.password,
+                            hashed_password,
                             user.email,
                             user.location,
                             user.goal,
@@ -177,11 +212,16 @@ class UserQueries:
         old_data = user.dict()
         return UserOut(id=id, **old_data)
 
-    # def record_to_vacation_out(self, record):
-    #     return VacationOut(
-    #         id=record[0],
-    #         name=record[1],
-    #         from_date=record[2],
-    #         to_date=record[3],
-    #         thoughts=record[4],
-    #     )
+    def record_to_user_out(self, record):
+        return UserOutWithPassword(
+            first=record[0],
+            last=record[1],
+            username=record[2],
+            hashed_password=record[3],
+            email=record[4],
+            location=record[5],
+            goal=record[6],
+            avatar_picture=record[7],
+            bio=record[8]      
+        )
+    
