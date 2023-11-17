@@ -7,9 +7,9 @@ steps = [
             first VARCHAR(1000) NOT NULL,
             last VARCHAR(1000) NOT NULL,
             username VARCHAR(1000) NOT NULL,
-            password VARCHAR(1000) NOT NULL,
+            hashed_password VARCHAR(1000) NOT NULL,
             email VARCHAR(1000) NOT NULL,
-            location VARCHAR(1000),
+            location VARCHAR(1000) NOT NULL,
             goal SMALLINT DEFAULT 0,
             avatar_picture VARCHAR(1000) DEFAULT 'https://merriam-webster.com/assets/mw/images/article/art-wap-article-main/egg-3442-e1f6463624338504cd021bf23aef8441@1x.jpg',
             bio TEXT
