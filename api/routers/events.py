@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from authenticator import authenticator
 from pydantic import BaseModel
-from typing import List, Union
+from typing import List, Union, Optional
 from queries.events import (
     EventIn,
     EventOut,
@@ -26,4 +26,30 @@ async def create_event(
 def get_events(
     repo: EventQueries = Depends(),
 ):
-    return repo.get_events()
+    return repo.get_all()
+
+@router.get("/events/{id}", response_model=Optional[EventOut])
+def get_one_event(
+    id: int,
+    response: Response,
+    repo: EventQueries = Depends(),
+) -> EventOut:
+    event = repo.get_one(id)
+    if event is None:
+        response.status_code = 404
+    return event
+
+@router.put("/events/{id}", response_model=Union[Error, EventOut])
+def update_event(
+    id: int,
+    event: EventIn,
+    repo: EventQueries = Depends(),
+) -> Union[Error, EventOut]:
+    return repo.update(id, event)
+    
+@router.delete("/events/{id}", response_model=bool)
+def delete_event(
+    id: int,
+    repo: EventQueries = Depends(),
+) -> bool:
+    return repo.delete(id)
