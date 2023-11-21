@@ -40,14 +40,14 @@ class UserQueries:
                     result = db.execute(
                         """
                         SELECT
-                        first, 
-                        last, 
-                        username, 
-                        hashed_password, 
-                        email, 
-                        location, 
-                        goal, 
-                        avatar_picture, 
+                        first,
+                        last,
+                        username,
+                        hashed_password,
+                        email,
+                        location,
+                        goal,
+                        avatar_picture,
                         bio
                         FROM users
                         WHERE username = %s
@@ -60,7 +60,7 @@ class UserQueries:
                     return self.record_to_user_out(record)
         except Exception:
             return {"message": "Could not get account"}
-        
+
     pass
 
     # def get_one(self, vacation_id: int) -> Optional[VacationOut]:
@@ -222,6 +222,5 @@ class UserQueries:
             location=record[5],
             goal=record[6],
             avatar_picture=record[7],
-            bio=record[8]      
+            bio=record[8]
         )
-    
