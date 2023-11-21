@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends
 from authenticator import authenticator
 from pydantic import BaseModel
+from typing import List, Union
 from queries.events import (
     EventIn,
     EventOut,
     EventQueries,
+    Error
 )
 
 class HttpError(BaseModel):
@@ -18,12 +20,10 @@ async def create_event(
     repo: EventQueries = Depends(),
     account_data: dict = Depends(authenticator.get_current_account_data)
 ):
-    repo.create(info)
-    return EventOut(
-        name=info.name,
-        date=info.date,
-        image_url=info.image_url,
-        description=info.description,
-        location=info.location,
-        hosted_by=info.hosted_by
-    )
+    return repo.create(info)
+
+@router.get("/events", response_model=Union[Error, List[EventOut]])
+def get_events(
+    repo: EventQueries = Depends(),
+):
+    return repo.get_events()
