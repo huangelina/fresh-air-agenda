@@ -42,6 +42,7 @@ steps = [
     [
         """
         CREATE TABLE attendance (
+            id SERIAL PRIMARY KEY NOT NULL,
             user_id INT REFERENCES users("id"),
             event_id INT REFERENCES events("id")
         );
@@ -56,6 +57,7 @@ steps = [
     [
         """
         CREATE TABLE timelogs (
+            id SERIAL PRIMARY KEY NOT NULL,
             date DATE NOT NULL,
             goal INT NOT NULL,
             time_outside INT DEFAULT 0,
