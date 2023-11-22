@@ -39,3 +39,36 @@ class TimeLogRepository:
                 id = result.fetchone()[0]
                 old_data = timelog.dict()
                 return TimeLogOut(id=id, **old_data)
+
+
+    def update(self, id: int, user_id: int, timelog:TimeLogIn)->TimeLogOut:
+        print("BEFORE TRY BLOCK")
+        try:
+            with pool.connection() as conn:
+                with conn.cursor()as db:
+                    db.execute(
+                        """
+                        UPDATE timelogs
+                        SET
+                            date = %s,
+                            goal = %s,
+                            time_outside = %s
+                        WHERE id = %s AND user_id = %s
+                        """,
+                        [
+                            timelog.date,
+                            timelog.goal,
+                            timelog.time_outside,
+                            id,
+                            user_id
+                        ]
+                    )
+                    return self.timelog_in_to_out(id, timelog)
+        except Exception as e:
+            print(e)
+            return {"message": "Could not update timelog"}
+
+
+    def timelog_in_to_out(self, id, timelog: TimeLogIn):
+        old_data = timelog.dict()
+        return TimeLogOut(id=id, **old_data)

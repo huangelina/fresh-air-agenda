@@ -12,3 +12,14 @@ def create_timelog(
     account_data: dict = Depends(authenticator.get_current_account_data)
 ):
     return repo.create(timelog)
+
+
+@router.put('/users/{user_id}/logs/{id}', response_model= TimeLogOut)
+def update_timelog(
+    id: int,
+    user_id: int,
+    timelog: TimeLogIn,
+    repo: TimeLogRepository = Depends(),
+    account_data: dict = Depends(authenticator.get_current_account_data)
+) -> TimeLogOut:
+    return repo.update(id, user_id, timelog)
