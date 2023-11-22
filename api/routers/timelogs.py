@@ -4,7 +4,7 @@ from authenticator import authenticator
 
 router = APIRouter()
 
-@router.post('/users/{$user_id}/logs/', response_model= TimeLogOut)
+@router.post('/users/{user_id}/logs/', response_model= TimeLogOut)
 def create_timelog(
     timelog: TimeLogIn,
     user_id: int,
