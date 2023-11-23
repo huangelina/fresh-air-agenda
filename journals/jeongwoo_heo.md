@@ -5,7 +5,7 @@ We also created a template of the required API endpoints that were derived from 
 our wireframe. Our biggest blocker was making sure that our API endpoints were being correctly 
 designed so that the actual implementation would be simple.
 
---------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 
 Week 2 (Nov 13 - 17)
 
@@ -14,4 +14,10 @@ migrations. We also created the User endpoint and implemented login and logout A
 for the user. Our biggest blocker was attempting to generate the correct response without any
 errors for our user login authentication.
 
+-----------------------------------------------------------------------------------------------------
 
+Week 3 (Nov 20 - 22)
+
+During week 3, we assigned API endpoints for each of our team members and completed our endpoints
+successfully. We were also able to get started on the frontend for our User login/logout. Our biggest
+blocker was trying to fix the GET all timelogs endpoint to output correctly onto the FastAPI page.
