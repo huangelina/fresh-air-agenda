@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Union
+from typing import Optional, Union, List
 from queries.pool import pool
 
 class Error(BaseModel):
@@ -18,6 +18,7 @@ class UserIn(BaseModel):
 
 
 class UserOut(BaseModel):
+    id: int
     first: str
     last: str
     username: str
@@ -40,6 +41,7 @@ class UserQueries:
                     result = db.execute(
                         """
                         SELECT
+                        id,
                         first,
                         last,
                         username,
@@ -52,7 +54,7 @@ class UserQueries:
                         FROM users
                         WHERE username = %s
                         """,
-                        [username],
+                        [username]
                     )
                     record = result.fetchone()
                     if record is None:
@@ -61,125 +63,136 @@ class UserQueries:
         except Exception:
             return {"message": "Could not get account"}
 
-    pass
+    def get_user_by_id(self, user_id: int) -> UserOut:
+        with pool.connection() as conn:
+            with conn.cursor() as db:
+                result = db.execute(
+                        """
+                        SELECT
+                        id,
+                        first,
+                        last,
+                        username,
+                        email,
+                        location,
+                        goal,
+                        avatar_picture,
+                        bio
+                        FROM users
+                        WHERE id = %s
+                        """,
+                        [user_id]
+                    )
+                record = result.fetchone()
+                if record is None:
+                    return None
+                return UserOut(
+                    id=record[0],
+                    first=record[1],
+                    last=record[2],
+                    username=record[3],
+                    email=record[4],
+                    location=record[5],
+                    goal=record[6],
+                    avatar_picture=record[7],
+                    bio=record[8]
+                )
 
-    # def get_one(self, vacation_id: int) -> Optional[VacationOut]:
-    #     try:
-    #         # connect the database
-    #         with pool.connection() as conn:
-    #             # get a cursor (something to run SQL with)
-    #             with conn.cursor() as db:
-    #                 # Run our SELECT statement
-    #                 result = db.execute(
-    #                     """
-    #                     SELECT id
-    #                          , name
-    #                          , from_date
-    #                          , to_date
-    #                          , thoughts
-    #                     FROM vacations
-    #                     WHERE id = %s
-    #                     """,
-    #                     [vacation_id]
-    #                 )
-    #                 record = result.fetchone()
-    #                 if record is None:
-    #                     return None
-    #                 return self.record_to_vacation_out(record)
-    #     except Exception as e:
-    #         print(e)
-    #         return {"message": "Could not get that vacation"}
 
-    # def delete(self, vacation_id: int) -> bool:
-    #     try:
-    #         # connect the database
-    #         with pool.connection() as conn:
-    #             # get a cursor (something to run SQL with)
-    #             with conn.cursor() as db:
-    #                 db.execute(
-    #                     """
-    #                     DELETE FROM vacations
-    #                     WHERE id = %s
-    #                     """,
-    #                     [vacation_id]
-    #                 )
-    #                 return True
-    #     except Exception as e:
-    #         print(e)
-    #         return False
+    def delete(self, user_id: int) -> bool:
+        try:
+            with pool.connection() as conn:
+                with conn.cursor() as db:
+                    db.execute(
+                        """
+                        DELETE FROM users
+                        WHERE id = %s
+                        """,
+                        [user_id]
+                    )
+                    return True
+        except Exception as e:
+            print(e)
+            return False
 
-    # def update(self, vacation_id: int, vacation: VacationIn) -> Union[VacationOut, Error]:
-    #     try:
-    #         # connect the database
-    #         with pool.connection() as conn:
-    #             # get a cursor (something to run SQL with)
-    #             with conn.cursor() as db:
-    #                 db.execute(
-    #                     """
-    #                     UPDATE vacations
-    #                     SET name = %s
-    #                       , from_date = %s
-    #                       , to_date = %s
-    #                       , thoughts = %s
-    #                     WHERE id = %s
-    #                     """,
-    #                     [
-    #                         vacation.name,
-    #                         vacation.from_date,
-    #                         vacation.to_date,
-    #                         vacation.thoughts,
-    #                         vacation_id
-    #                     ]
-    #                 )
-    #                 # old_data = vacation.dict()
-    #                 # return VacationOut(id=vacation_id, **old_data)
-    #                 return self.vacation_in_to_out(vacation_id, vacation)
-    #     except Exception as e:
-    #         print(e)
-    #         return {"message": "Could not update that vacation"}
+    def update(self, user_id: int, user: UserIn) -> Union[UserOut, Error]:
+        try:
+            with pool.connection() as conn:
+                with conn.cursor() as db:
+                    db.execute(
+                        """
+                        UPDATE users
+                        SET
+                            first = %s,
+                            last = %s,
+                            username = %s,
+                            email = %s,
+                            location = %s,
+                            goal = %s,
+                            avatar_picture = %s,
+                            bio = %s
+                        WHERE id = %s
+                        """,
+                        [
+                            user.first,
+                            user.last,
+                            user.username,
+                            user.email,
+                            user.location,
+                            user.goal,
+                            user.avatar_picture,
+                            user.bio,
+                            user_id
+                        ]
+                    )
+                    return self.user_in_to_out(user_id, user)
+        except Exception as e:
+            print(e)
+            return {"message": "Could not update that user"}
 
-    # def get_all(self) -> Union[Error, List[VacationOut]]:
-    #     try:
-    #         # connect the database
-    #         with pool.connection() as conn:
-    #             # get a cursor (something to run SQL with)
-    #             with conn.cursor() as db:
-    #                 # Run our SELECT statement
-    #                 result = db.execute(
-    #                     """
-    #                     SELECT id, name, from_date, to_date, thoughts
-    #                     FROM vacations
-    #                     ORDER BY from_date;
-    #                     """
-    #                 )
-    #                 # result = []
-    #                 # for record in db:
-    #                 #     vacation = VacationOut(
-    #                 #         id=record[0],
-    #                 #         name=record[1],
-    #                 #         from_date=record[2],
-    #                 #         to_date=record[3],
-    #                 #         thoughts=record[4],
-    #                 #     )
-    #                 #     result.append(vacation)
-    #                 # return result
-
-    #                 return [
-    #                     self.record_to_vacation_out(record)
-    #                     for record in result
-    #                 ]
-    #     except Exception as e:
-    #         print(e)
-    #         return {"message": "Could not get all vacations"}
+    def get_all(self) -> Union[Error, List[UserOut]]:
+        try:
+            with pool.connection() as conn:
+                with conn.cursor() as db:
+                    result = db.execute(
+                        """
+                        SELECT
+                        id,
+                        first,
+                        last,
+                        username,
+                        email,
+                        location,
+                        goal,
+                        avatar_picture,
+                        bio
+                        FROM users
+                        """
+                    )
+                    output = []
+                    for record in db:
+                        user = UserOut(
+                            id=record[0],
+                            first=record[1],
+                            last=record[2],
+                            username=record[3],
+                            email=record[4],
+                            location=record[5],
+                            goal=record[6],
+                            avatar_picture=record[7],
+                            bio=record[8]
+                        )
+                        output.append(user)
+                    return output
+        except Exception as e:
+            print(e)
+            return {"message": "Could not get all vacations"}
 
     def create(self, user: UserIn,
                hashed_password: str) -> UserOutWithPassword:
         try:
-            # connect the database
             with pool.connection() as conn:
-                # get a cursor (something to run SQL with)
                 with conn.cursor() as db:
-                    # Run our INSERT statement
                     result = db.execute(
                         """
                         INSERT INTO users
@@ -201,9 +214,6 @@ class UserQueries:
                         ]
                     )
                     id = result.fetchone()[0]
-                    # Return new data
-                    # old_data = vacation.dict()
-                    # return VacationOut(id=id, **old_data)
                     return self.user_in_to_out(id, user)
         except Exception:
             return {"message": "Create did not work"}
@@ -214,13 +224,14 @@ class UserQueries:
 
     def record_to_user_out(self, record):
         return UserOutWithPassword(
-            first=record[0],
-            last=record[1],
-            username=record[2],
-            hashed_password=record[3],
-            email=record[4],
-            location=record[5],
-            goal=record[6],
-            avatar_picture=record[7],
-            bio=record[8]
+            id=record[0],
+            first=record[1],
+            last=record[2],
+            username=record[3],
+            hashed_password=record[4],
+            email=record[5],
+            location=record[6],
+            goal=record[7],
+            avatar_picture=record[8],
+            bio=record[9]
         )
