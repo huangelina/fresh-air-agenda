@@ -1,16 +1,17 @@
 from pydantic import BaseModel
-from datetime import datetime
+from typing import List
+from datetime import date
 from queries.pool import pool
 
 class TimeLogIn(BaseModel):
-    date : datetime
+    date: date
     goal: int
     time_outside: int
     user_id: int
 
 class TimeLogOut(BaseModel):
     id: int
-    date : datetime
+    date: date
     goal: int
     time_outside: int
     user_id: int
@@ -41,8 +42,35 @@ class TimeLogRepository:
                 return TimeLogOut(id=id, **old_data)
 
 
+    def get_timelogs_for_user(self, user_id: int) -> List[TimeLogOut]:
+        try:
+            with pool.connection() as conn:
+                with conn.cursor() as db:
+                    db.execute(
+                        """
+                        SELECT id, date, goal, time_outside, user_id
+                        FROM timelogs
+                        WHERE user_id = %s
+                        """,
+                        [user_id]
+                    )
+                    timeloglist = []
+                    rows = db.fetchall()
+                    for row in rows:
+                        log = {
+                            "id": row[0],
+                            "date": row[1],
+                            "goal": row[2],
+                            "time_outside": row[3],
+                            "user_id": row[4]
+                        }
+                        timeloglist.append(log)
+                    return timeloglist
+        except Exception:
+            return {"message": "Could not get all logs"}
+
+
     def update(self, id: int, user_id: int, timelog:TimeLogIn)->TimeLogOut:
-        print("BEFORE TRY BLOCK")
         try:
             with pool.connection() as conn:
                 with conn.cursor()as db:
