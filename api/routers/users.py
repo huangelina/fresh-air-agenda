@@ -37,6 +37,17 @@ async def create_user(
     token = await authenticator.login(response, request, form, repo)
     return UserToken(user=user, **token.dict())
 
+@router.get("/token", response_model=UserToken | None)
+async def get_token(
+    request: Request,
+    user: UserIn = Depends(authenticator.try_get_current_account_data)
+) -> UserToken | None:
+    if user and authenticator.cookie_name in request.cookies:
+        return {
+            "access_token": request.cookies[authenticator.cookie_name],
+            "type": "Bearer",
+            "user": user,
+        }
 
 @router.get("/users", response_model=Union[List[UserOut], Error])
 def get_all_users(

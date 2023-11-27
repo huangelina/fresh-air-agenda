@@ -11,9 +11,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
 
+  const baseUrl = `${process.env.REACT_APP_API_HOST}`;
+
   return (
    <BrowserRouter>
-        <AuthProvider>
+        <AuthProvider baseUrl={baseUrl}>
           <Routes>
             <Route exact path="/" element={<Main />}></Route>
             <Route exact path="/signup" element={<SignupForm />}></Route>
