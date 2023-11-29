@@ -9,10 +9,13 @@ from queries.events import (
     Error
 )
 
+
 class HttpError(BaseModel):
     detail: str
 
+
 router = APIRouter()
+
 
 @router.post("/events", response_model=EventOut | HttpError)
 async def create_event(
@@ -22,11 +25,13 @@ async def create_event(
 ):
     return repo.create(info)
 
+
 @router.get("/events", response_model=Union[Error, List[EventOut]])
 def get_events(
     repo: EventQueries = Depends(),
 ):
     return repo.get_all()
+
 
 @router.get("/events/{id}", response_model=Optional[EventOut])
 def get_one_event(
@@ -39,6 +44,7 @@ def get_one_event(
         response.status_code = 404
     return event
 
+
 @router.put("/events/{id}", response_model=Union[Error, EventOut])
 def update_event(
     id: int,
@@ -46,7 +52,8 @@ def update_event(
     repo: EventQueries = Depends(),
 ) -> Union[Error, EventOut]:
     return repo.update(id, event)
-    
+
+
 @router.delete("/events/{id}", response_model=bool)
 def delete_event(
     id: int,

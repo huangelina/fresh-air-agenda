@@ -2,8 +2,10 @@ from pydantic import BaseModel
 from typing import Optional, Union, List
 from queries.pool import pool
 
+
 class Error(BaseModel):
     message: str
+
 
 class UserIn(BaseModel):
     first: str
@@ -98,7 +100,6 @@ class UserQueries:
                     bio=record[8]
                 )
 
-
     def delete(self, user_id: int) -> bool:
         try:
             with pool.connection() as conn:
@@ -154,7 +155,7 @@ class UserQueries:
         try:
             with pool.connection() as conn:
                 with conn.cursor() as db:
-                    result = db.execute(
+                    db.execute(
                         """
                         SELECT
                         id,
@@ -195,8 +196,17 @@ class UserQueries:
                 with conn.cursor() as db:
                     result = db.execute(
                         """
-                        INSERT INTO users
-                            (first, last, username, hashed_password, email, location, goal, avatar_picture, bio)
+                        INSERT INTO users (
+                            first,
+                            last,
+                            username,
+                            hashed_password,
+                            email,
+                            location,
+                            goal,
+                            avatar_picture,
+                            bio
+                        )
                         VALUES
                             (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                         RETURNING id;

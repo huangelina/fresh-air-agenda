@@ -3,8 +3,10 @@ from typing import Optional, Union, List
 from datetime import datetime
 from queries.pool import pool
 
+
 class Error(BaseModel):
     message: str
+
 
 class EventIn(BaseModel):
     name: str
@@ -13,6 +15,7 @@ class EventIn(BaseModel):
     description: Optional[str]
     location: str
     hosted_by: int
+
 
 class EventOut(BaseModel):
     id: int
@@ -23,6 +26,7 @@ class EventOut(BaseModel):
     location: str
     hosted_by: int
 
+
 class EventQueries:
     def get_one(self, id: int) -> Optional[EventOut]:
         try:
@@ -32,8 +36,8 @@ class EventQueries:
                         """
                         SELECT
                         id,
-                        name, 
-                        date, 
+                        name,
+                        date,
                         image_url,
                         description,
                         location,
@@ -58,8 +62,8 @@ class EventQueries:
                         """
                         SELECT
                         id,
-                        name, 
-                        date, 
+                        name,
+                        date,
                         image_url,
                         description,
                         location,
@@ -73,15 +77,21 @@ class EventQueries:
                     ]
         except Exception:
             return {"message": "Could not get events"}
-    
+
     def create(self, event: EventIn) -> EventOut:
         try:
             with pool.connection() as conn:
                 with conn.cursor() as db:
                     result = db.execute(
                         """
-                        INSERT INTO events
-                            (name, date, image_url, description, location, hosted_by)
+                        INSERT INTO events (
+                            name,
+                            date,
+                            image_url,
+                            description,
+                            location,
+                            hosted_by
+                        )
                         VALUES
                             (%s, %s, %s, %s, %s, %s)
                         RETURNING id;
@@ -99,19 +109,19 @@ class EventQueries:
                     return self.user_in_to_out(id, event)
         except Exception:
             return {"message": "Create did not work"}
-    
+
     def update(self, id: int, event: EventIn) -> Union[Error, EventOut]:
         try:
             with pool.connection() as conn:
                 with conn.cursor() as db:
-                    result = db.execute(
+                    db.execute(
                         """
                         UPDATE events
                         SET name = %s,
-                            date = %s, 
-                            image_url = %s, 
-                            description = %s, 
-                            location = %s, 
+                            date = %s,
+                            image_url = %s,
+                            description = %s,
+                            location = %s,
                             hosted_by = %s
                         WHERE id = %s
                         """,
@@ -129,7 +139,6 @@ class EventQueries:
         except Exception as e:
             print(e)
             return {"message": "Could not update event"}
-
 
     def delete(self, id: int) -> bool:
         try:

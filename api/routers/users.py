@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, Response, HTTPException, status, Request
+from fastapi import APIRouter, Depends, Response, Request
 from jwtdown_fastapi.authentication import Token
 from authenticator import authenticator
 from pydantic import BaseModel
 from typing import List, Optional, Union
-from queries.users import UserIn
 from queries.users import (
     Error,
     UserIn,
@@ -11,15 +10,19 @@ from queries.users import (
     UserQueries,
 )
 
+
 class UserForm(BaseModel):
     username: str
     password: str
 
+
 class UserToken(Token):
     user: UserOut
 
+
 class HttpError(BaseModel):
     detail: str
+
 
 router = APIRouter()
 
@@ -37,6 +40,7 @@ async def create_user(
     token = await authenticator.login(response, request, form, repo)
     return UserToken(user=user, **token.dict())
 
+
 @router.get("/token", response_model=UserToken | None)
 async def get_token(
     request: Request,
@@ -48,6 +52,7 @@ async def get_token(
             "type": "Bearer",
             "user": user,
         }
+
 
 @router.get("/users", response_model=Union[List[UserOut], Error])
 def get_all_users(

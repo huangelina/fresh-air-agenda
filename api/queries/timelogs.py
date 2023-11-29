@@ -3,11 +3,13 @@ from typing import List
 from datetime import date
 from queries.pool import pool
 
+
 class TimeLogIn(BaseModel):
     date: date
     goal: int
     time_outside: int
     user_id: int
+
 
 class TimeLogOut(BaseModel):
     id: int
@@ -17,9 +19,8 @@ class TimeLogOut(BaseModel):
     user_id: int
 
 
-
 class TimeLogRepository:
-    def create(self, timelog:TimeLogIn)->TimeLogOut:
+    def create(self, timelog: TimeLogIn) -> TimeLogOut:
         with pool.connection() as conn:
             with conn.cursor() as db:
                 result = db.execute(
@@ -40,7 +41,6 @@ class TimeLogRepository:
                 id = result.fetchone()[0]
                 old_data = timelog.dict()
                 return TimeLogOut(id=id, **old_data)
-
 
     def get_timelogs_for_user(self, user_id: int) -> List[TimeLogOut]:
         try:
@@ -69,8 +69,7 @@ class TimeLogRepository:
         except Exception:
             return {"message": "Could not get all logs"}
 
-
-    def update(self, id: int, user_id: int, timelog:TimeLogIn)->TimeLogOut:
+    def update(self, id: int, user_id: int, timelog: TimeLogIn) -> TimeLogOut:
         try:
             with pool.connection() as conn:
                 with conn.cursor()as db:
@@ -95,7 +94,6 @@ class TimeLogRepository:
         except Exception as e:
             print(e)
             return {"message": "Could not update timelog"}
-
 
     def timelog_in_to_out(self, id, timelog: TimeLogIn):
         old_data = timelog.dict()

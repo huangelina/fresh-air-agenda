@@ -1,11 +1,12 @@
 from typing import List
-from fastapi import APIRouter,Depends, Response
-from queries.timelogs import TimeLogIn,TimeLogRepository,TimeLogOut
+from fastapi import APIRouter, Depends
+from queries.timelogs import TimeLogIn, TimeLogRepository, TimeLogOut
 from authenticator import authenticator
 
 router = APIRouter()
 
-@router.post('/users/{user_id}/logs/', response_model= TimeLogOut)
+
+@router.post('/users/{user_id}/logs/', response_model=TimeLogOut)
 def create_timelog(
     timelog: TimeLogIn,
     user_id: int,
@@ -25,7 +26,7 @@ def get_timelogs(
     return result
 
 
-@router.put('/users/{user_id}/logs/{id}', response_model= TimeLogOut)
+@router.put('/users/{user_id}/logs/{id}', response_model=TimeLogOut)
 def update_timelog(
     id: int,
     user_id: int,
