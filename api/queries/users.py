@@ -116,7 +116,10 @@ class UserQueries:
             print(e)
             return False
 
-    def update(self, user_id: int, user: UserIn) -> Union[UserOut, Error]:
+    def update(self,
+               user_id: int,
+               user: UserIn,
+               hashed_password: str) -> Union[UserOutWithPassword, Error]:
         try:
             with pool.connection() as conn:
                 with conn.cursor() as db:
@@ -127,6 +130,7 @@ class UserQueries:
                             first = %s,
                             last = %s,
                             username = %s,
+                            hashed_password = %s,
                             email = %s,
                             location = %s,
                             goal = %s,
@@ -138,6 +142,7 @@ class UserQueries:
                             user.first,
                             user.last,
                             user.username,
+                            hashed_password,
                             user.email,
                             user.location,
                             user.goal,

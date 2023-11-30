@@ -8,6 +8,7 @@ from queries.users import (
     UserIn,
     UserOut,
     UserQueries,
+    UserOutWithPassword
 )
 
 
@@ -68,8 +69,10 @@ def update_user(
     user: UserIn,
     repo: UserQueries = Depends(),
     account_data: dict = Depends(authenticator.get_current_account_data)
-) -> Union[Error, UserOut]:
-    return repo.update(user_id, user)
+
+) -> Union[Error, UserOutWithPassword]:
+    hashed_password = authenticator.hash_password(user.password)
+    return repo.update(user_id, user, hashed_password=hashed_password)
 
 
 @router.delete("/users/{user_id}", response_model=bool)
