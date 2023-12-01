@@ -13,3 +13,11 @@ Got more work done on endpoints and spent most of my time helping teammates and 
 Conversations were good and we did some work as a team.
 
 No big ah-hah moments.
+
+## Nov 27th to Dec 1st
+
+Got work done on userpage and frontend auth, working on mainpage frontend
+
+Convos were good and we worked as a team for some blocker solving
+
+No big ah-hah moments.
