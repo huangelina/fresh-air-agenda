@@ -9,7 +9,6 @@ function DailyLog() {
     const [userId, setUserId] = useState();
     const [user, setUser] = useState({});
 
-
     async function fetchData() {
         if (token && userId) {
             const url = `http://localhost:8000/users/${userId}/logs`;
@@ -60,6 +59,7 @@ function DailyLog() {
     // fetch data after user data loads from token
     useEffect(() => {
         fetchData();
+    // eslint-disable-next-line
     }, [userId]);
 
     const todaysLog = userTimelogs.find((timelog) => timelog.date === currentDate);
