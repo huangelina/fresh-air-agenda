@@ -21,3 +21,12 @@ Week 3 (Nov 20 - 22)
 During week 3, we assigned API endpoints for each of our team members and completed our endpoints
 successfully. We were also able to get started on the frontend for our User login/logout. Our biggest
 blocker was trying to fix the GET all timelogs endpoint to output correctly onto the FastAPI page.
+
+-----------------------------------------------------------------------------------------------------
+
+Week 4 (Nov 27 - Dec 1)
+
+During week 4, we worked on our assigned front-end components and assisted each other when we had
+blockers. We mostly completed our front-end pages and need to wrap them up by working on CSS styling.
+We also successfully deployed our front-end and wrote a unit test that passes the gitlab pipeline. No
+notable blockers for this week as they were solved without too much of a hassle.
