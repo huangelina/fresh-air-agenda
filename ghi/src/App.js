@@ -11,10 +11,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
 
+  const domain = /https:\/\/[^/]+/;
+  const basename = process.env.PUBLIC_URL.replace(domain, '');
   const baseUrl = `${process.env.REACT_APP_API_HOST}`;
 
   return (
-   <BrowserRouter>
+   <BrowserRouter basename={basename}>
         <AuthProvider baseUrl={baseUrl}>
           <Routes>
             <Route exact path="/" element={<Main />}></Route>
