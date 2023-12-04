@@ -2,6 +2,7 @@ import "./App.css";
 import SignupForm from "./SignupForm.jsx"
 import LoginForm from "./LoginForm.jsx"
 import Main from "./Main.jsx"
+import Metrics from "./Metrics.jsx";
 import UserDetail from "./UserPage.jsx";
 import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
 import useToken from "@galvanize-inc/jwtdown-for-react";
@@ -105,6 +106,7 @@ function App() {
                     <Route exact path="/signup" element={<SignupForm />}></Route>
                     <Route exact path="/login" element={<LoginForm />}></Route>
                     <Route exact path="/users/:id" element = {<UserDetail />}></Route>
+                    <Route exact path="/metrics" element={<Metrics />}></Route>
                 </Routes>
                 </div>
 
