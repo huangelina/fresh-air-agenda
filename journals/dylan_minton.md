@@ -1,3 +1,27 @@
+## December 4, 2023
+
+This week I worked on:
+
+* Getting user metrics from db
+* Extrapolating user metrics for gathered data
+* Displaying user metrics
+* CI/CD
+
+Most of the week was spend manipulating user timelogs
+to return a usable value. The average for the current
+week, the previous week, and a user selected week
+were calculated using several functions and displayed
+using Chart.js for React.
+
+I volunteered to take on CI/CD following the lecture,
+so I started by going through all of my teams code
+and linting to make sure we passed the flake8
+pipeline. After our code was reformatted I configured
+and deployed a database and our API. Later, with some
+help from Rosheen I got the backend deployed properly
+and deployed the frontend after some debugging.
+
+
 ## November 22, 2023
 
 This week I worked on:

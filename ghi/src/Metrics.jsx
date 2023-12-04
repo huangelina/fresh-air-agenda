@@ -213,9 +213,6 @@ function Metrics() {
                 );
               })}
             </select>
-            <div>
-              {weekAverage(selectedWeek, selectedYear)}
-            </div>
             <div className="selected_average" style={{height: 250}}>
               <Bar data={selectedAverage} />
             </div>
