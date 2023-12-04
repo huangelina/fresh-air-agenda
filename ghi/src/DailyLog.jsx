@@ -9,6 +9,7 @@ function DailyLog() {
     const [userId, setUserId] = useState();
     const [user, setUser] = useState({});
 
+
     async function fetchData() {
         if (token && userId) {
             const url = `http://localhost:8000/users/${userId}/logs`;
@@ -28,7 +29,7 @@ function DailyLog() {
         }
     }
 
-    // get user.id and user from token
+
     useEffect(() => {
         async function getUserID(token) {
             if (token) {
@@ -47,7 +48,7 @@ function DailyLog() {
         getUserID(token);
     }, [token]);
 
-    // format the date
+
     useEffect(() => {
         const date = new Date();
         const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -56,7 +57,8 @@ function DailyLog() {
         setCurrentDate(formattedDate);
     }, []);
 
-    // fetch data after user data loads from token
+
+
     useEffect(() => {
         fetchData();
     // eslint-disable-next-line
@@ -64,7 +66,7 @@ function DailyLog() {
 
     const todaysLog = userTimelogs.find((timelog) => timelog.date === currentDate);
 
-    // create timelog for new user or new day
+
     const createTimelog = async (userId, user) => {
         try {
             const newTimelog = {
@@ -92,7 +94,7 @@ function DailyLog() {
         }
     };
 
-    // update timelog in database when 'time spent outside' changes
+
     const updateTimelog = async (newTimeOutside) => {
         try {
             if (token && userId && todaysLog) {

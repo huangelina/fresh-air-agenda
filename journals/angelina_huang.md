@@ -1,3 +1,20 @@
+## December 01, 2023
+
+This week I worked on:
+* Creating a frontend page for user daily logs
+* Updating authentication for user daily logs
+* Fixing pipeline error for daily log
+
+This week the team finished almost all of the
+frontend functionality. We were able to reach all
+checkpoints.
+
+While working on the daily log page, I was getting
+errors because of the order my use effects we being
+called. It was difficult for me to pin point the
+issue, but eventually I was able to fix these issues
+thanks to the networking tab.
+
 ## November 22, 2023
 
 This week we worked on:
@@ -5,7 +22,7 @@ This week we worked on:
 * Created endpoint for updating user timelog
 
 Our team spent these last three days working on
-the remaining endpoints. We have ran into a blocker
+the remaining endpoints. We have run into a blocker
 relating to the datetime field in get user timelogs.
 The initial solution worked, but we want to to
 improve upon it.
