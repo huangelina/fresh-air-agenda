@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
+import OPEN_WEATHER_API_KEY from "./keys.js"
 
 
 function Main() {
@@ -9,8 +10,28 @@ function Main() {
     const [currentDate, setCurrentDate] = useState('');
     const [userId, setUserId] = useState();
     const [user, setUser] = useState({});
+    const [weather, getWeather] = useState()
+
+    async function fetchWeather() {
+        if (user.location) {
+
+            const url = `http://api.openweathermap.org/geo/1.0/direct?q=${user.location}&limit=1&appid=${OPEN_WEATHER_API_KEY}`
+
+            const response = await fetch(url)
+            if (response.ok) {
+                const data = await response.json();
+                const next_url = `https://api.openweathermap.org/data/2.5/weather?lat=${data[0].lat}&lon=${data[0].lon}&appid=${OPEN_WEATHER_API_KEY}&units=imperial`
+                const next_response = await fetch(next_url)
+                if (next_response.ok) {
+                    const next_data = await next_response.json();
+                    getWeather(next_data)
+
+                }
+            }
 
 
+        }
+    }
     async function fetchData() {
         if (token && userId) {
             const url = `http://localhost:8000/users/${userId}/logs`;
@@ -60,9 +81,10 @@ function Main() {
 
     // fetch data after user data loads from token
     useEffect(() => {
-        fetchData();
+        fetchData()
+        fetchWeather();
          // eslint-disable-next-line
-    }, [userId]);
+    }, [userId,user]);
 
     const todaysLog = userTimelogs.find((timelog) => timelog.date === currentDate);
 
@@ -160,11 +182,13 @@ function Main() {
     const newTimeOutside = updatedTimeOutside >= 0 ? updatedTimeOutside : 0;
     updateTimelog(newTimeOutside);
     };
-
+    if (user && weather){
     return (
         <><h1>Daily Log</h1>
         <div>
              <p>Current Date: {currentDate}</p>
+             <p>Current Weather: {weather.weather[0].description} {Math.round(weather.main.temp)}</p>
+             <p>High : {Math.round(weather.main.temp_max)} Low: {Math.round(weather.main.temp_min)}</p>
                 <div>
                     {todaysLog && (
                         <div key={todaysLog.id} className="timelog-item">
@@ -183,7 +207,7 @@ function Main() {
         </div></>
     );
 }
-
+}
 
 
 
