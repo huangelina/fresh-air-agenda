@@ -1,6 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
 import OPEN_WEATHER_API_KEY from "./keys.js"
 
 
@@ -14,9 +15,7 @@ function Main() {
 
     async function fetchWeather() {
         if (user.location) {
-
             const url = `http://api.openweathermap.org/geo/1.0/direct?q=${user.location}&limit=1&appid=${OPEN_WEATHER_API_KEY}`
-
             const response = await fetch(url)
             if (response.ok) {
                 const data = await response.json();
@@ -25,13 +24,12 @@ function Main() {
                 if (next_response.ok) {
                     const next_data = await next_response.json();
                     getWeather(next_data)
-
                 }
             }
-
-
         }
     }
+
+
     async function fetchData() {
         if (token && userId) {
             const url = `http://localhost:8000/users/${userId}/logs`;
@@ -51,7 +49,7 @@ function Main() {
         }
     }
 
-    // get user.id and user from token
+
     useEffect(() => {
         async function getUserID(token) {
             if (token) {
@@ -70,7 +68,7 @@ function Main() {
         getUserID(token);
     }, [token]);
 
-    // format the date
+
     useEffect(() => {
         const date = new Date();
         const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -79,16 +77,17 @@ function Main() {
         setCurrentDate(formattedDate);
     }, []);
 
-    // fetch data after user data loads from token
+
     useEffect(() => {
         fetchData()
         fetchWeather();
          // eslint-disable-next-line
     }, [userId,user]);
 
+
     const todaysLog = userTimelogs.find((timelog) => timelog.date === currentDate);
 
-    // create timelog for new user or new day
+
     const createTimelog = async (userId, user) => {
         try {
             const newTimelog = {
@@ -116,7 +115,7 @@ function Main() {
         }
     };
 
-    // update timelog in database when 'time spent outside' changes
+
     const updateTimelog = async (newTimeOutside) => {
         try {
             if (token && userId && todaysLog) {
@@ -142,6 +141,7 @@ function Main() {
             console.error('Error:', error);
         }
     };
+
 
     const incrementHour = () => {
         if (todaysLog) {
@@ -182,34 +182,65 @@ function Main() {
     const newTimeOutside = updatedTimeOutside >= 0 ? updatedTimeOutside : 0;
     updateTimelog(newTimeOutside);
     };
-    if (user && weather){
-    return (
-        <><h1>Daily Log</h1>
-        <div>
-             <p>Current Date: {currentDate}</p>
-             <p>Current Weather: {weather.weather[0].description} {Math.round(weather.main.temp)}</p>
-             <p>High : {Math.round(weather.main.temp_max)} Low: {Math.round(weather.main.temp_min)}</p>
-                <div>
-                    {todaysLog && (
-                        <div key={todaysLog.id} className="timelog-item">
-                            <p>timelog ID: {todaysLog.id}</p>
-                            <p>goal: {todaysLog.goal}</p>
-                            <p>time spent outside: {(todaysLog.time_outside)/60}</p>
-                            <button onClick={incrementHour}>+ 1 hr</button>
-                            <button onClick={decrementHour}>- 1 hr</button>
-                            <button onClick={incrementHalfHour}>+ 30 min</button>
-                            <button onClick={decrementHalfHour}>- 30 min</button>
-                            <button onClick={incrementFiveMinutes}>+ 5 min</button>
-                            <button onClick={decrementFiveMinutes}>- 5 min</button>
-                        </div>
-                    )}
-                </div>
-        </div></>
+
+
+    ChartJS.register(
+    ArcElement,
+    Tooltip,
+    Legend
     );
+
+
+    const totalTimeOutside = (todaysLog && todaysLog.time_outside) ? todaysLog.time_outside / 60 : 0;
+    const goal = (todaysLog && todaysLog.goal) ? todaysLog.goal : 0;
+
+
+    const data = {
+        labels: ['Time spent outside', 'Time remaining'],
+        datasets: [{
+            label: "hour(s)",
+            data: [
+                totalTimeOutside,
+                (totalTimeOutside > goal) ? 0 : goal - totalTimeOutside,
+            ],
+            backgroundColor: ['green', 'white'],
+            borderColor: ['white', 'white'],
+        }]
+    }
+
+    const options = {}
+
+    if (user && weather){
+        return (
+            <><h1>Daily Log</h1>
+            <div>
+                <p>Current Date: {currentDate}</p>
+                <p>Current Weather: {weather.weather[0].description} {Math.round(weather.main.temp)}</p>
+                <p>High : {Math.round(weather.main.temp_max)} Low: {Math.round(weather.main.temp_min)}</p>
+                    <div>
+                        {todaysLog && (
+                            <><div key={todaysLog.id} className="timelog-item">
+                                <p>timelog ID: {todaysLog.id}</p>
+                                <p>goal: {todaysLog.goal}</p>
+                                <p>time spent outside: {(todaysLog.time_outside) / 60}</p>
+                                <button onClick={incrementHour}>+ 1 hr</button>
+                                <button onClick={decrementHour}>- 1 hr</button>
+                                <button onClick={incrementHalfHour}>+ 30 min</button>
+                                <button onClick={decrementHalfHour}>- 30 min</button>
+                                <button onClick={incrementFiveMinutes}>+ 5 min</button>
+                                <button onClick={decrementFiveMinutes}>- 5 min</button>
+                            </div>
+                            <div>
+                                <Doughnut
+                                    data={data}
+                                    options={options}
+                                ></Doughnut>
+                            </div></>
+                        )}
+                    </div>
+            </div></>
+        );
+    }
 }
-}
-
-
-
 
 export default Main;
