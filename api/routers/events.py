@@ -29,6 +29,7 @@ async def create_event(
 @router.get("/events", response_model=Union[Error, List[EventOut]])
 def get_events(
     repo: EventQueries = Depends(),
+    account_data: dict = Depends(authenticator.get_current_account_data)
 ):
     return repo.get_all()
 
@@ -38,6 +39,7 @@ def get_one_event(
     id: int,
     response: Response,
     repo: EventQueries = Depends(),
+    account_data: dict = Depends(authenticator.get_current_account_data)
 ) -> EventOut:
     event = repo.get_one(id)
     if event is None:
@@ -50,6 +52,7 @@ def update_event(
     id: int,
     event: EventIn,
     repo: EventQueries = Depends(),
+    account_data: dict = Depends(authenticator.get_current_account_data)
 ) -> Union[Error, EventOut]:
     return repo.update(id, event)
 
@@ -58,5 +61,6 @@ def update_event(
 def delete_event(
     id: int,
     repo: EventQueries = Depends(),
+    account_data: dict = Depends(authenticator.get_current_account_data)
 ) -> bool:
     return repo.delete(id)

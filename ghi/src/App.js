@@ -4,11 +4,16 @@ import LoginForm from "./LoginForm.jsx"
 import Main from "./Main.jsx"
 import Metrics from "./Metrics.jsx";
 import UserDetail from "./UserPage.jsx";
+import EventsList from "./EventsList.jsx"
+import EventsForm from "./EventsForm.jsx"
+import EventAttendance from "./EventAttendance.jsx"
+import EventUpdate from "./EventUpdate.jsx"
 import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
 import useToken from "@galvanize-inc/jwtdown-for-react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import {useEffect, useState} from 'react';
+
 
 
 function App() {
@@ -74,6 +79,13 @@ function App() {
                                         signup
                                     </NavLink>
                                 </li>
+
+                                <li>
+                                    <NavLink className="nav-link " to="/events">
+                                        Events
+                                    </NavLink>
+                                </li>
+
                                 <li>
                                     Hi {userData.first}
                                 </li>
@@ -82,6 +94,7 @@ function App() {
                                     <a href="#" className="nav-link px-0 align-middle">
                                         <i className="fs-4 bi-table"></i> <span className="ms-1 d-none d-sm-inline">Events</span></a>
                                 </li> */}
+                                
 
                             </ul>
                             <hr/>
@@ -107,7 +120,11 @@ function App() {
                     <Route exact path="/login" element={<LoginForm />}></Route>
                     <Route exact path="/users/:id" element = {<UserDetail />}></Route>
                     <Route exact path="/metrics" element={<Metrics />}></Route>
-                </Routes>
+                  <Route exact path="/events" element={<EventsList />}></Route>
+            <Route exact path="/events/new" element={<EventsForm />}></Route>
+            <Route exact path="/events/:id/attendance" element={<EventAttendance />}></Route>
+            <Route exact path="/events/:id" element={<EventUpdate />}></Route>
+          </Routes>
                 </div>
 
             </BrowserRouter>

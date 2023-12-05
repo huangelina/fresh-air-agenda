@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, Union, List
-from datetime import datetime
+from datetime import date, time
 from queries.pool import pool
 
 
@@ -10,21 +10,25 @@ class Error(BaseModel):
 
 class EventIn(BaseModel):
     name: str
-    date: datetime
-    image_url: str
+    date: date
+    time: time
+    image_url: Optional[str]
     description: Optional[str]
     location: str
-    hosted_by: int
+    created_by: int
+    hosted_by: str
 
 
 class EventOut(BaseModel):
     id: int
     name: str
-    date: datetime
-    image_url: str
+    date: date
+    time: time
+    image_url: Optional[str]
     description: Optional[str]
     location: str
-    hosted_by: int
+    created_by: int
+    hosted_by: str
 
 
 class EventQueries:
@@ -38,9 +42,11 @@ class EventQueries:
                         id,
                         name,
                         date,
+                        time,
                         image_url,
                         description,
                         location,
+                        created_by,
                         hosted_by
                         FROM events
                         WHERE id = %s
@@ -64,11 +70,14 @@ class EventQueries:
                         id,
                         name,
                         date,
+                        time,
                         image_url,
                         description,
                         location,
+                        created_by,
                         hosted_by
                         FROM events
+                        ORDER BY date ASC, time ASC
                         """
                     )
                     return [
@@ -84,24 +93,29 @@ class EventQueries:
                 with conn.cursor() as db:
                     result = db.execute(
                         """
-                        INSERT INTO events (
-                            name,
-                            date,
-                            image_url,
-                            description,
-                            location,
-                            hosted_by
-                        )
+                        INSERT INTO events
+                            (
+                                name,
+                                date,
+                                time,
+                                image_url,
+                                description,
+                                location,
+                                created_by,
+                                hosted_by
+                            )
                         VALUES
-                            (%s, %s, %s, %s, %s, %s)
+                            (%s, %s, %s, %s, %s, %s, %s, %s)
                         RETURNING id;
                         """,
                         [
                             event.name,
                             event.date,
+                            event.time,
                             event.image_url,
                             event.description,
                             event.location,
+                            event.created_by,
                             event.hosted_by
                         ]
                     )
@@ -119,18 +133,22 @@ class EventQueries:
                         UPDATE events
                         SET name = %s,
                             date = %s,
+                            time = %s,
                             image_url = %s,
                             description = %s,
                             location = %s,
+                            created_by = %s,
                             hosted_by = %s
                         WHERE id = %s
                         """,
                         [
                             event.name,
                             event.date,
+                            event.time,
                             event.image_url,
                             event.description,
                             event.location,
+                            event.created_by,
                             event.hosted_by,
                             id
                         ]
@@ -165,8 +183,10 @@ class EventQueries:
             id=record[0],
             name=record[1],
             date=record[2],
-            image_url=record[3],
-            description=record[4],
-            location=record[5],
-            hosted_by=record[6]
+            time=record[3],
+            image_url=record[4],
+            description=record[5],
+            location=record[6],
+            created_by=record[7],
+            hosted_by=record[8]
         )

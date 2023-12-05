@@ -26,11 +26,13 @@ steps = [
         CREATE TABLE events (
             id SERIAL PRIMARY KEY NOT NULL,
             name VARCHAR(1000) NOT NULL,
-            date TIMESTAMP NOT NULL,
+            date DATE NOT NULL,
+            time TIME NOT NULL,
             image_url VARCHAR(1000),
             description VARCHAR(1000),
             location VARCHAR(1000) NOT NULL,
-            hosted_by INT REFERENCES users("id")
+            created_by INT REFERENCES users("id"),
+            hosted_by VARCHAR(1000) NOT NULL
         );
         """,
 
@@ -39,12 +41,13 @@ steps = [
         """
     ],
 
-    [
+    [ 
         """
         CREATE TABLE attendance (
             id SERIAL PRIMARY KEY NOT NULL,
             user_id INT REFERENCES users("id"),
-            event_id INT REFERENCES events("id")
+            event_id INT REFERENCES events("id"),
+            user_name VARCHAR(1000)
         );
         """,
 
