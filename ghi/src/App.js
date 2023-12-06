@@ -9,10 +9,9 @@ import EventsForm from "./EventsForm.jsx"
 import EventAttendance from "./EventAttendance.jsx"
 import EventUpdate from "./EventUpdate.jsx"
 import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
-import useToken from "@galvanize-inc/jwtdown-for-react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { NavLink } from "react-router-dom";
 import {useEffect, useState} from 'react';
+import Nav from './Nav.js'
 
 
 
@@ -23,12 +22,10 @@ function App() {
 
 
     const { token } = useAuthContext();
-    const { logout } = useToken();
-    const [userData, setUserData] = useState("");
+    const [userData, setUserData] = useState(null);
 
 
     useEffect(() => {
-
         const fetchUser = async () => {
         if (token) {
             const url = 'http://localhost:8000/token';
@@ -56,79 +53,22 @@ function App() {
   return (
 
    <BrowserRouter basename={basename}>
-          <div className="container-fluid"/>
-            <div className="row flex-nowrap">
-                <div className="col-auto col-md-3 col-xl-1 px-sm-2 px-0 bg-dark">
-                    <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                        <a href="/" >
-                            <img src = "logo-color.png" alt = "" height = {100} width = {100} className="rounded-3 img-fluid" />
-                        </a>
-                            <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                                <li>
-                                    <NavLink className="nav-link " to="/metrics">
-                                        Metrics
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink className="nav-link " to="/login">
-                                        login
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink className="nav-link " to="/signup">
-                                        signup
-                                    </NavLink>
-                                </li>
-
-                                <li>
-                                    <NavLink className="nav-link " to="/events">
-                                        Events
-                                    </NavLink>
-                                </li>
-
-                                <li>
-                                    Hi {userData.first}
-                                </li>
-
-                                {/* <li>
-                                    <a href="#" className="nav-link px-0 align-middle">
-                                        <i className="fs-4 bi-table"></i> <span className="ms-1 d-none d-sm-inline">Events</span></a>
-                                </li> */}
-                                
-
-                            </ul>
-                            <hr/>
-                        <div className="dropdown pb-4">
-                            <a href={`http://localhost:3000/users/${userData.id}`} className="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src={userData.avatar_picture} alt="avatar_picture" width="30" height="30" className="rounded-circle"/>
-                                <span className="d-none d-sm-inline mx-1">{userData.first}</span>
-                            </a>
-                            <ul className="dropdown-menu dropdown-menu-dark text-small shadow">
-                                <li><a className="dropdown-item" href={`http://localhost:3000/users/${userData.id}`}>Profile</a></li>
-                                <li>
-                                    <hr className="dropdown-divider"/>
-                                </li>
-                                 <li><button className="dropdown-item" onClick={logout}>Sign out</button></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div className="col py-3"/>
-                <Routes>
-                    <Route exact path="/" element={<Main />}></Route>
-                    <Route exact path="/signup" element={<SignupForm />}></Route>
-                    <Route exact path="/login" element={<LoginForm />}></Route>
-                    <Route exact path="/users/:id" element = {<UserDetail />}></Route>
-                    <Route exact path="/metrics" element={<Metrics />}></Route>
-                  <Route exact path="/events" element={<EventsList />}></Route>
+        <Nav userData= {userData} />
+        <div className="container">
+            <Routes>
+                <Route exact path="/" element={<Main userData= {userData} />}/>
+                <Route exact path="/signup" element={<SignupForm />}></Route>
+                <Route exact path="/login" element={<LoginForm userData= {userData} />}></Route>
+                <Route exact path="/users/:id" element = {<UserDetail userData = {setUserData} />}></Route>
+                <Route exact path="/metrics" element={<Metrics />}></Route>
+                <Route exact path="/events" element={<EventsList />}></Route>
             <Route exact path="/events/new" element={<EventsForm />}></Route>
             <Route exact path="/events/:id/attendance" element={<EventAttendance />}></Route>
             <Route exact path="/events/:id" element={<EventUpdate />}></Route>
           </Routes>
-                </div>
+        </div>
 
-            </BrowserRouter>
-
+    </BrowserRouter>
   );
 }
 

@@ -1,12 +1,14 @@
 import useToken from "@galvanize-inc/jwtdown-for-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 
-const LoginForm = () => {
+
+const LoginForm = (userData) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useToken();
   const navigate = useNavigate();
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,6 +16,8 @@ const LoginForm = () => {
     e.target.reset();
     navigate("/");
   };
+
+
 
   return (
     <div className="card text-bg-light mb-3">
@@ -42,6 +46,9 @@ const LoginForm = () => {
             <input className="btn btn-primary" type="submit" value="Login" />
           </div>
         </form>
+        <NavLink className="nav-link " to="/signup">
+          Don't have an account?
+        </NavLink>
       </div>
     </div>
   );

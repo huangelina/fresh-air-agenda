@@ -1,10 +1,11 @@
 import { useState } from "react";
 import useToken from "@galvanize-inc/jwtdown-for-react";
 import { useNavigate } from "react-router-dom";
-
+import { NavLink } from "react-router-dom";
 
 const SignupForm = () => {
   const [firstName, setFirstName] = useState("");
+  const [goal, setGoal] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -25,6 +26,7 @@ const SignupForm = () => {
       username: username,
       password: password,
       location: location,
+      goal: goal,
 
     };
     try {
@@ -130,11 +132,26 @@ const SignupForm = () => {
               }}
             />
           </div>
+          <div className="mb-3">
+            <input
+              name="goal"
+              type="int"
+              className="form-control"
+              placeholder="Weekly Goal"
+              onChange={(e) => {
+                setGoal(e.target.value * 60);
+              }}
+            />
+          </div>
           <div>
             <input className="btn btn-primary" type="submit" value="Register" />
           </div>
         </form>
+        <NavLink className="nav-link" to="/login">
+         Already have an account?
+      </NavLink>
       </div>
+
     </div>
   );
 };
