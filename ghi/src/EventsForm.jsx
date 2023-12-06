@@ -27,7 +27,6 @@ const EventsForm = () => {
                 })
                 if (user_response.ok) {
                     const userData = await user_response.json();
-                    console.log(userData)
 
                     const userLocation = (userData.user.location);
                     setUserLocation(userLocation)
@@ -36,7 +35,6 @@ const EventsForm = () => {
                     setHostID(userID)
 
                     const userName = (userData.user.first + " " + userData.user.last);
-                    console.log("user's name ->", userName);
                     setHostUser(userName)
                 }
                 else {
@@ -91,7 +89,6 @@ const EventsForm = () => {
         });
 
         if (attendees_response.ok) {
-            console.log("host attendee successfully added")
         }
 
         if (event_response.ok) {
@@ -105,24 +102,57 @@ const EventsForm = () => {
                 created_by: '',
                 hosted_by: ''
             })
+            window.alert("Successfully created Event!")
         }
         else {
             throw new Error('Response did not return ok');
         }
 
-    }
+    };
 
     const handleFormChange = (e) => {
         const value = e.target.value;
         const inputName = e.target.name;
-        setFormData({
-            ...formData,
-            [inputName]: value,
-            location: userLocation,
-            created_by: hostID,
-            hosted_by: hostUser,
-        });
-    }
+
+        if (inputName === "time") {
+            const timeArray = value.split(':');
+            let hours = parseInt(timeArray[0]);
+            const minutes = timeArray[1];
+            let period;
+
+            if (value.includes("AM")) {
+                period = "AM";
+            } 
+            else if (value.includes("PM")) {
+                period = "PM";
+            }
+
+            if (hours < 10) {
+                hours = `0${hours}`;
+            }
+
+            if (period === "PM" && hours !== 12) {
+                hours += 12;
+            }
+            else if (period === "AM" && hours === 12) {
+                hours = 0;
+            }
+            
+            setFormData({
+                ...formData,
+                time: `${hours}:${minutes}:00`,
+            });
+        }
+        else {
+            setFormData({
+                ...formData,
+                [inputName]: value,
+                location: userLocation,
+                created_by: hostID,
+                hosted_by: hostUser,
+            });
+        }
+    };
 
     return (
         <>
@@ -130,58 +160,72 @@ const EventsForm = () => {
               <center><form onSubmit={handleSubmit} id="create-event-form">
                 {/* Name */}
                 <div>
-                    <input 
-                        onChange={handleFormChange} 
-                        value={formData.name} 
-                        placeholder="Event name" 
-                        required type="text" 
-                        name="name" 
-                        id="name" />
+                    <label>
+                        Event Name:
+                        <input 
+                            onChange={handleFormChange} 
+                            value={formData.name}  
+                            required 
+                            type="text" 
+                            name="name" 
+                            id="name" />
+                    </label>
                 </div>
 
                 {/* Date */}
                 <div>
-                    <input 
-                        onChange={handleFormChange} 
-                        value={formData.date} 
-                        placeholder="Date (0000-00-00)" 
-                        required type="text" 
-                        name="date" 
-                        id="date" />
+                    <label>
+                        Event Date:
+                        <input 
+                            onChange={handleFormChange} 
+                            value={formData.date}  
+                            required 
+                            type="date" 
+                            name="date" 
+                            id="date" />
+                    </label>
                 </div>
 
                 {/* Time */}
                 <div>
-                    <input 
-                        onChange={handleFormChange} 
-                        value={formData.time} 
-                        placeholder="Time (00:00:00)" 
-                        required type="text" 
-                        name="time" 
-                        id="time" />
+                    <label>
+                        Event Time:
+                        <input 
+                            onChange={handleFormChange} 
+                            value={formData.time}  
+                            required 
+                            type="time" 
+                            name="time" 
+                            id="time" />
+                    </label>
                 </div>
 
                 {/* Image_URL */}
                 <div>
-                    <input 
-                        onChange={handleFormChange} 
-                        value={formData.image_url} 
-                        placeholder="Image URL (optional)" 
-                        required type="text" 
-                        name="image_url" 
-                        id="image_url" />
-                        
+                    <label>
+                        Event Picture:
+                        <input 
+                            onChange={handleFormChange} 
+                            value={formData.image_url} 
+                            placeholder="Picture URL (optional)" 
+                            type="text" 
+                            name="image_url" 
+                            id="image_url" />
+                    </label> 
                 </div>
 
                 {/* Description */}
                 <div>
-                    <input 
-                        onChange={handleFormChange} 
-                        value={formData.description} 
-                        placeholder="Description (optional)" 
-                        required type="text" 
-                        name="description" 
-                        id="description" />
+                    <label>
+                        Event Description:
+                        <input 
+                            onChange={handleFormChange} 
+                            value={formData.description} 
+                            required 
+                            type="text" 
+                            name="description" 
+                            id="description" />
+                    </label>
                 </div>
 
                 {/* Location */}
@@ -194,7 +238,6 @@ const EventsForm = () => {
                     Create
                 </button>
 
-                <br></br>
                 <br></br>
                 
                 <Link to='/events/'>

@@ -20,13 +20,9 @@ const EventAttendance = () => {
                 const response = await fetch('http://localhost:8000/attendance');
                 if (response.ok) {
                     const attendanceList = await response.json();
-                    
-                    console.log("list of attendees ->", attendanceList);
-                    console.log("the id", id)
+             
                     const filteredAttendance = attendanceList.filter((attendee) => attendee.event_id === parseInt(id));
                     setAttendance((filteredAttendance));
-                    console.log("list of attendees ->", filteredAttendance);
-
                 }
                 else {
                     throw new Error('Response did not return ok');
@@ -72,8 +68,6 @@ const EventAttendance = () => {
                 });
                 if (event_response.ok) {
                     const eventData = await event_response.json();
-                    console.log("list of events ->", eventData);
-
                     setEvent(eventData);
                 }
                 else {

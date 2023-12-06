@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useAuthContext} from "@galvanize-inc/jwtdown-for-react";
 
 const EventUpdate = () => {
@@ -103,6 +103,7 @@ const EventUpdate = () => {
             {event && (
                 <center>
                 <form onSubmit={handleDataChange}>
+                <div>
                     <label>
                         Event Name:
                         <input
@@ -112,41 +113,68 @@ const EventUpdate = () => {
                             onChange={(e) => setEvent({ ...event, name: e.target.value })}
                         />
                     </label>
+                </div>
 
+                <div>
                     <label>
                         Event Date:
                         <input
-                            type="text"
+                            type="date"
                             name="date"
                             value={event.date}
                             onChange={(e) => setEvent({ ...event, date: e.target.value })}
                         />
                     </label>
+                </div>
 
+                <div>
                     <label>
                         Event Time:
                         <input
-                            type="text"
+                            type="time"
                             name="time"
                             value={event.time}
                             onChange={(e) => setEvent({ ...event, time: e.target.value })}
                         />
                     </label>
+                </div>
 
+                <div>
+                    <label>
+                        Event Picture:
+                        <input
+                            type="text"
+                            name="image_url"
+                            value={event.image_url}
+                            onChange={(e) => setEvent({ ...event, image_url: e.target.value })}
+                        />
+                    </label>
+                </div>
+
+                <div>
                     <label>
                         Event Description:
                         <input
                             type="text"
-                            name="name"
+                            name="description"
                             value={event.description}
                             onChange={(e) => setEvent({ ...event, description: e.target.value })}
                         />
                     </label>
+                </div>
 
                     <br></br>
                     <br></br>
 
                     <button type="submit">Update Event</button>
+
+                    <br></br>
+
+                    <Link to='/events/'>
+                        <button>
+                            Return to Events
+                        </button>
+                    </Link>
 
                 </form>
                 </center>

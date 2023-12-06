@@ -20,8 +20,6 @@ const EventsList = () => {
                 });
                 if (event_response.ok) {
                     const eventData = await event_response.json();
-                    console.log("list of events ->", eventData);
-
                     setEvents(eventData);
                 }
                 else {
@@ -48,10 +46,7 @@ const EventsList = () => {
 
                     setUserID(userData.user.id)
 
-                    console.log("Logged in User's first name ->", userData.user.first);
-
-                    const userLocation = (userData.user.location);
-                    
+                    const userLocation = (userData.user.location);  
                     const filteredEvents = events.filter((event) => event.location === userLocation);
                     setEvents(filteredEvents);
                 }
@@ -97,7 +92,6 @@ const EventsList = () => {
 
             if(event_response.ok) {
                 getEventData()
-                console.log("delete was successful")
                 window.alert("Successfully deleted Event!")
 
             }
@@ -110,6 +104,10 @@ const EventsList = () => {
         }
     }
 
+    const convertTo12Hour = (time) => {
+        return new Date(`1970-01-01T${time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    };
+
     return (
         <>  
         <center> <h1>Events</h1> </center>
@@ -117,10 +115,10 @@ const EventsList = () => {
                 <center>
                     <div className="card">
                         <div key={event.id}>
-                            <div><img src={event.image_url} alt="something" width="250" height="200"/></div>
+                            <div><img src={event.image_url} alt="default" width="250" height="200"/></div>
                             <div>Name: {event.name}</div>
                             <div>Date: {event.date}</div>
-                            <div>Time: {event.time}</div>
+                            <div>Time: {convertTo12Hour(event.time)}</div>
                             <div>Description: {event.description}</div>
                             <div>Location: {event.location}</div>
                             <div>Host: {event.hosted_by}</div>
