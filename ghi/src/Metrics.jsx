@@ -61,28 +61,34 @@ function Metrics() {
   // Chart Data & Options
 
   const currentAverage = {
-    labels: ["Average This Week"],
+    labels: [""],
     datasets: [{
+      backgroundColor: '#99C3E9',
+      borderRadius: 5,
       indexAxis: 'y',
-      label: "User Average",
+      label: "Average Minutes Outside",
       data: [currentWeekAverage()]
     }]
   };
 
   const previousAverage = {
-    labels: ["Average Last Week"],
+    labels: [""],
     datasets: [{
+      backgroundColor: '#99C3E9',
+      borderRadius: 5,
       indexAxis: 'y',
-      label: "User Average",
+      label: "Average Minutes Outside",
       data: [previousWeekAverage()]
     }]
   };
 
   const selectedAverage = {
-    labels: ["Average of Selected Week"],
+    labels: [""],
     datasets: [{
+      backgroundColor: '#99C3E9',
+      borderRadius: 5,
       indexAxis: 'y',
-      label: "User Average",
+      label: "Average Minutes Outside",
       data: [weekAverage(selectedWeek, selectedYear)]
     }]
   };
@@ -184,38 +190,42 @@ function Metrics() {
 
     return (
       <>
-        <div>
+        <div className='justify-content-center'>
           <h1>Metrics</h1>
-          <h2>Average this week</h2>
-            <div className="current_average" style={{height: 250}}>
-              <Bar data={currentAverage} />
-            </div>
-          <h2>Average last week</h2>
-            <div className="previous_average" style={{height: 250}}>
-              <Bar data={previousAverage} />
-            </div>
-        </div>
-        <div>
-          <h2>Average of selected week</h2>
-            <select onChange={handleChangeYear} name="year_selector" id="year_selector" required>
-              <option value="">Select A Year</option>
-              {years.map(year => {
-                return (
-                  <option key={year} value={year}>{year}</option>
-                );
-              })}
-            </select>
-            <select onChange={handleChangeWeek} name="week_selector" id="week_selector" required>
-              <option value="">Select A Week</option>
-              {weeks.map(week => {
-                return (
-                  <option key={week} value={week}>{week}</option>
-                );
-              })}
-            </select>
-            <div className="selected_average" style={{height: 250}}>
-              <Bar data={selectedAverage} />
-            </div>
+          <div>
+            <h2>Average This Week</h2>
+              <div className="current_average" style={{height: 300}}>
+                <Bar data={currentAverage} />
+              </div>
+          </div>
+          <div>
+            <h2>Average Last Week</h2>
+              <div className="previous_average" style={{height: 300}}>
+                <Bar data={previousAverage} />
+              </div>
+          </div>
+          <div>
+            <h2>Average of Selected Week</h2>
+              <select onChange={handleChangeYear} name="year_selector" id="year_selector" required>
+                <option value="">Select A Year</option>
+                {years.map(year => {
+                  return (
+                    <option key={year} value={year}>{year}</option>
+                  );
+                })}
+              </select>
+              <select onChange={handleChangeWeek} name="week_selector" id="week_selector" required>
+                <option value="">Select A Week</option>
+                {weeks.map(week => {
+                  return (
+                    <option key={week} value={week}>{week}</option>
+                  );
+                })}
+              </select>
+              <div className="selected_average" style={{height: 300}}>
+                <Bar data={selectedAverage} />
+              </div>
+          </div>
         </div>
       </>
     );

@@ -9,7 +9,7 @@ import EventsForm from "./EventsForm.jsx"
 import EventAttendance from "./EventAttendance.jsx"
 import EventUpdate from "./EventUpdate.jsx"
 import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route} from "react-router-dom";
 import {useEffect, useState} from 'react';
 import Nav from './Nav.js'
 
@@ -25,6 +25,7 @@ function App() {
     const [userData, setUserData] = useState(null);
 
 
+
     useEffect(() => {
         const fetchUser = async () => {
         if (token) {
@@ -35,31 +36,36 @@ function App() {
                     credentials: "include",
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
+          if (response.ok) {
+            const data = await response.json();
+            setUserData(data.user);
+
+          } else {
+            throw new Error('Network response was not ok');
+          }
+        } catch (error) {
+          console.error('Error fetching ID:', error);
+        }
+
+      }
+    };
+
+    fetchUser();
+
+  }, [token]);
 
 
-                    setUserData(data.user);
-                    }
-                 else {
-                    throw new Error('Network response was not ok');
-                }
-            } catch (error) {
-                console.error('Error fetching ID:', error);
-
-        }}
-    }; fetchUser()}, [token])
 
   return (
 
    <BrowserRouter basename={basename}>
-        <Nav userData= {userData} />
+        <Nav userData= { userData } />
         <div className="container">
             <Routes>
                 <Route exact path="/" element={<Main userData= {userData} />}/>
                 <Route exact path="/signup" element={<SignupForm />}></Route>
-                <Route exact path="/login" element={<LoginForm userData= {userData} />}></Route>
-                <Route exact path="/users/:id" element = {<UserDetail userData = {setUserData} />}></Route>
+                <Route exact path="/login" element={<LoginForm />}></Route>
+                <Route exact path="/users/:id" element = { userData? <UserDetail userData = {userData} />: null}></Route>
                 <Route exact path="/metrics" element={<Metrics />}></Route>
                 <Route exact path="/events" element={<EventsList />}></Route>
             <Route exact path="/events/new" element={<EventsForm />}></Route>

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 
 
-const LoginForm = (userData) => {
+const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useToken();

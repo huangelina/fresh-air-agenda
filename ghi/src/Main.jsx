@@ -4,18 +4,14 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import OPEN_WEATHER_API_KEY from "./keys.js"
 
-function Main(userData) {
 
+function Main() {
     const { token } = useAuthContext();
     const [userTimelogs, setUserTimelogs ] = useState([]);
     const [currentDate, setCurrentDate] = useState('');
     const [userId, setUserId] = useState();
     const [user, setUser] = useState({});
-    const [weather, setWeather] = useState()
-
-
-
-
+    const [weather, getWeather] = useState()
 
     async function fetchWeather() {
         if (user.location) {
@@ -27,7 +23,7 @@ function Main(userData) {
                 const next_response = await fetch(next_url)
                 if (next_response.ok) {
                     const next_data = await next_response.json();
-                    setWeather(next_data)
+                    getWeather(next_data)
                 }
             }
         }
@@ -214,11 +210,6 @@ function Main(userData) {
 
     const options = {}
 
-
-
-
-
-
     if (user && weather){
         return (
             <><h1>Daily Log</h1>
@@ -250,7 +241,6 @@ function Main(userData) {
             </div></>
         );
     }
-
 }
 
 export default Main;

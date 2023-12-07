@@ -1,31 +1,27 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {useEffect, useState} from 'react';
-
 import useToken from "@galvanize-inc/jwtdown-for-react";
 
 
-function Nav(userData) {
-
+function Nav({ userData }) {
 
     const { logout } = useToken();
     const [isLoggedIn, setisLoggedIn] = useState(false)
+    const navigate = useNavigate();
 
 
     useEffect(() => {
-  if (userData.userData) {
-    setisLoggedIn(true);
-  }
-}, [userData]);
+        if (userData) {
+            setisLoggedIn(true);
+        }
+    }, [userData]);
 
 
     function signout() {
         logout();
+        navigate("/login");
         window.location.reload();
     }
-
-
-
-
 
 
     return (
@@ -49,13 +45,13 @@ function Nav(userData) {
                 </ul>
             {(isLoggedIn) ? (
             <div className="dropdown pb-4 pe-5 ms-auto">
-              <p>Hi {userData.userData.first}</p>
-                <a href={`${process.env.PUBLIC_URL}/${userData.userData.id}`} className="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src={userData.userData.avatar_picture} alt="Profile" width="30" height="30" className="rounded-circle"/>
+              <p>Hi {userData.first}</p>
+                <NavLink className="d-flex align-items-center text-white text-decoration-none dropdown-toggle nav-link" to={`/users/${userData.id}`} id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src={userData.avatar_picture} alt="Profile" width="30" height="30" className="rounded-circle"/>
                     <span className="d-none d-sm-inline mx-1">{userData.first}</span>
-                </a>
+                </NavLink>
                 <ul className="dropdown-menu dropdown-menu-dark text-small shadow ">
-                    <li><a className="dropdown-item " href={`${process.env.PUBLIC_URL}/users/${userData.userData.id}`}>Profile</a></li>
+                    <li><NavLink className="dropdown-item nav-link" to={`/users/${userData.id}`}>Profile</NavLink></li>
                     <li>
                         <hr className="dropdown-divider"/>
                     </li>
