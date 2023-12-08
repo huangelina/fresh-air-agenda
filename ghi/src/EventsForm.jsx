@@ -156,97 +156,86 @@ const EventsForm = () => {
 
     return (
         <>
-              <center><h1>Create An Event</h1></center>
-              <center><form onSubmit={handleSubmit} id="create-event-form">
-                {/* Name */}
-                <div>
-                    <label>
-                        Event Name:
-                        <input 
-                            onChange={handleFormChange} 
-                            value={formData.name}  
-                            required 
-                            type="text" 
-                            name="name" 
-                            id="name" />
-                    </label>
+        <br></br>
+        <center>
+        <h2> Create Event </h2>  
+        <div className="card text-bg-light mb-3" style={{ width: "25rem" }}>
+            <div className="card-body">
+                <form onSubmit={handleSubmit} id="create-event-form">
+                <div className="mb-3">
+                    <input  
+                        className="form-control"
+                        placeholder="Event Name"
+                        required 
+                        type="text" 
+                        name="name"
+                        value={formData.name}
+                        onChange={handleFormChange} 
+                    />
                 </div>
 
-                {/* Date */}
-                <div>
-                    <label>
-                        Event Date:
-                        <input 
-                            onChange={handleFormChange} 
-                            value={formData.date}  
-                            required 
-                            type="date" 
-                            name="date" 
-                            id="date" />
-                    </label>
+                <div className="mb-3">
+                    <input
+                        className="form-control" 
+                        placeholder="Date" 
+                        required 
+                        type="date" 
+                        name="date"
+                        value={formData.date}
+                        onChange={handleFormChange} 
+                    />
                 </div>
 
-                {/* Time */}
-                <div>
-                    <label>
-                        Event Time:
-                        <input 
-                            onChange={handleFormChange} 
-                            value={formData.time}  
-                            required 
-                            type="time" 
-                            name="time" 
-                            id="time" />
-                    </label>
+                <div className="mb-3">
+                    <input  
+                        className="form-control"
+                        placeholder="Time"
+                        required 
+                        type="time" 
+                        name="time"
+                        value={formData.time}
+                        onChange={handleFormChange} 
+                    />
                 </div>
 
-                {/* Image_URL */}
-                <div>
-                    <label>
-                        Event Picture:
-                        <input 
-                            onChange={handleFormChange} 
-                            value={formData.image_url} 
-                            placeholder="Picture URL (optional)" 
-                            type="text" 
-                            name="image_url" 
-                            id="image_url" />
-                    </label> 
+                <div className="mb-3">
+                    <input
+                        className="form-control"
+                        placeholder="Picture URL (optional)" 
+                        type="text" 
+                        name="image_url"
+                        value={formData.image_url}
+                        onChange={handleFormChange}
+                    />
                 </div>
 
-                {/* Description */}
-                <div>
-                    <label>
-                        Event Description:
-                        <input 
-                            onChange={handleFormChange} 
-                            value={formData.description} 
-                            required 
-                            type="text" 
-                            name="description" 
-                            id="description" />
-                    </label>
+                <div className="mb-3">
+                    <textarea
+                        className="form-control"
+                        placeholder="Description"
+                        required 
+                        type="text" 
+                        name="description"
+                        value={formData.description}
+                        onChange={handleFormChange}
+                    /> 
                 </div>
 
-                {/* Location */}
-
-                {/* Hosted By */}
-
-                <br></br>
-
-                <button>
+                <button className="btn btn-success mb-2" type="submit">
                     Create
                 </button>
 
                 <br></br>
                 
                 <Link to='/events/'>
-                    <button>
+                    <button className="btn btn-primary">
                         Return to Events
                     </button>
                 </Link>
-                
-              </form></center>
+                </form>
+            </div>
+            </div>
+            </center>
         </>
     );
 }

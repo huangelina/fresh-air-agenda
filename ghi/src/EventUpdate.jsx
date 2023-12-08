@@ -17,8 +17,6 @@ const EventUpdate = () => {
                 });
                 if (event_response.ok) {
                     const eventData = await event_response.json();
-                    console.log("list of events ->", eventData);
-
                     setEvent(eventData);
                 }
                 else {
@@ -42,9 +40,7 @@ const EventUpdate = () => {
 
                 if (user_response.ok) {
                     const userData = await user_response.json();
-
                     setUserID(userData.user.id)
-                    console.log("Logged in User's first name ->", userData.user.first);
                 }
                 else {
                     throw new Error('Response did not return ok');
@@ -99,14 +95,17 @@ const EventUpdate = () => {
 
     return (
         <>
-        <center> <h1>Update Event</h1> </center>
+        <br></br>
+        <center> <h2>Update Event</h2> <center></center>
+        <div className="card text-bg-light mb-3" style={{ width: "25rem"}}>
+            <div className="card-body">
             {event && (
-                <center>
                 <form onSubmit={handleDataChange}>
-                <div>
+                <div className="mb-3">
                     <label>
                         Event Name:
                         <input
+                            className="form-control"
                             type="text"
                             name="name"
                             value={event.name}
@@ -115,10 +114,11 @@ const EventUpdate = () => {
                     </label>
                 </div>
 
-                <div>
+                <div className="mb-3">
                     <label>
                         Event Date:
                         <input
+                            className="form-control"
                             type="date"
                             name="date"
                             value={event.date}
@@ -127,10 +127,11 @@ const EventUpdate = () => {
                     </label>
                 </div>
 
-                <div>
+                <div className="mb-3">
                     <label>
                         Event Time:
                         <input
+                            className="form-control"
                             type="time"
                             name="time"
                             value={event.time}
@@ -139,10 +140,11 @@ const EventUpdate = () => {
                     </label>
                 </div>
 
-                <div>
+                <div className="mb-3">
                     <label>
                         Event Picture:
                         <input
+                            className="form-control"
                             type="text"
                             name="image_url"
                             value={event.image_url}
@@ -151,10 +153,11 @@ const EventUpdate = () => {
                     </label>
                 </div>
 
-                <div>
+                <div className="mb-3">
                     <label>
                         Event Description:
-                        <input
+                        <textarea
+                            className="form-control"
                             type="text"
                             name="description"
                             value={event.description}
@@ -166,20 +169,21 @@ const EventUpdate = () => {
                     <br></br>
                     <br></br>
 
-                    <button type="submit">Update Event</button>
+                    <button className="btn btn-success mb-2" type="submit">Update Event</button>
 
                     <br></br>
 
                     <Link to='/events/'>
-                        <button>
+                        <button className="btn btn-primary">
                             Return to Events
                         </button>
                     </Link>
 
                 </form>
-                </center>
             )}
-
+            </div>
+            </div>
+        </center>
         </>
     )
 }

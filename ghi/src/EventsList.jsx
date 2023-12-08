@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { NavLink, Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuthContext} from "@galvanize-inc/jwtdown-for-react";
-import './EventStyle.css';
 
 
 const EventsList = () => {
@@ -78,9 +77,9 @@ const EventsList = () => {
                 }
             });
 
-            if(attendance_response.ok) {
-                console.log("attendance successfully deleted for event")
-            }
+            if (attendance_response.ok) {
+                window.alert("Removed attendees!")
+            } 
             
             const event_response = await fetch(`http://localhost:8000/events/${event.id}`, {
                 method: 'DELETE',
@@ -90,7 +89,7 @@ const EventsList = () => {
                 }
             });
 
-            if(event_response.ok) {
+            if (event_response.ok) {
                 getEventData()
                 window.alert("Successfully deleted Event!")
 
@@ -109,47 +108,68 @@ const EventsList = () => {
     };
 
     return (
-        <>  
-        <center> <h1>Events</h1> </center>
-            {events.map(event => (
-                <center>
-                    <div className="card">
-                        <div key={event.id}>
-                            <div><img src={event.image_url} alt="default" width="250" height="200"/></div>
-                            <div>Name: {event.name}</div>
-                            <div>Date: {event.date}</div>
-                            <div>Time: {convertTo12Hour(event.time)}</div>
-                            <div>Description: {event.description}</div>
-                            <div>Location: {event.location}</div>
-                            <div>Host: {event.hosted_by}</div>
-                            
-                            <Link to={`/events/${event.id}/attendance`}>
-                                <button disabled={!(token)}>
-                                    Attendees
-                                </button>
-                            </Link>
+        <>
+            <center><h1>Events</h1>
+                {token ? (
+                    <Link to="/events/new">
+                        <button className="btn btn-primary">
+                            Create Event
+                        </button>
+                    </Link>
+                ) : (
+                    <button className="btn btn-primary" disabled>
+                        Create Event
+                    </button>
+                )}
+            </center>
+            
+            <div className="row">
+                {events.map(event => (
+                    <div key={event.id} className="col-md-4 mb-4">
+                        <div className="card" style={{ width: "23rem" }}>
+                            <center><img className="card-img-top" src={event.image_url} alt="Event Pic" /></center>
+                            <div className="card-body">
+                                <h5 className="card-title"><b>{event.name}</b></h5>
+                                <p className="card-text">Description: {event.description}</p>
+                                <p className="card-text">Date: {event.date}</p>
+                                <p className="card-text">Time: {convertTo12Hour(event.time)}</p>
+                                <p className="card-text">Location: {event.location}</p>
+                                <p className="card-text">Host: {event.hosted_by}</p>
+                            <center>
+                                <Link to={`/events/${event.id}/attendance`}>
+                                    <button
+                                        className="btn btn-info m-1" 
+                                        disabled={!token}>
+                                            Attendees
+                                    </button>
+                                </Link>
 
-                            <Link to={`/events/${event.id}`}>
-                                <button disabled={!(token && event.created_by === userID)}>
-                                    Update
+                                {token && event.created_by === userID ? (
+                                    <Link to={`/events/${event.id}`}>
+                                        <button className="btn btn-success m-1">
+                                            Update
+                                        </button>
+                                    </Link>
+                                ) : (
+                                    <button className="btn btn-success m-1" disabled>
+                                        Update
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={() => handleDelete(event)}
+                                    className="btn btn-danger m-1"
+                                    disabled={!(token && event.created_by === userID)}>
+                                    Delete
                                 </button>
-                            </Link>
-                            
-                            <button 
-                            onClick={() => handleDelete(event)}
-                            disabled={!(token && event.created_by === userID)}>
-                                Delete
-                            </button>                               
+                            </center>
+                            </div>
                         </div>
                     </div>
-                </center>
-        
-            ))}
-            <h3>
-                <center><NavLink className="btn btn-primary" to="/events/new">Create Event</NavLink></center>
-            </h3>
+                ))}
+            </div>
         </>
-    )
+    );
 }
 
 export default EventsList;

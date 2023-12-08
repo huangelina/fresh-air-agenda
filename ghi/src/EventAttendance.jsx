@@ -107,7 +107,6 @@ const EventAttendance = () => {
         });
         
         if (attendees_response.ok) {
-            console.log("host attendee successfully added")
             window.location.reload();
             window.alert("Successfully registered for Event!")
         }
@@ -116,7 +115,6 @@ const EventAttendance = () => {
 
     const handleDelete = async () => {
         const userToDelete = attendance.find(obj => obj.user_id === userID);
-        console.log("User to delete", userToDelete)
 
         if (token && userID === userToDelete.user_id) {
             const response = await fetch(`http://localhost:8000/attendance/${userToDelete.id}`, {
@@ -144,36 +142,47 @@ const EventAttendance = () => {
 
     return (
         <>
-        <center> <h1>Attendees</h1> 
-            {attendance.map(attendee => (     
-                <div key={attendee.id}>
-                    <div>{attendee.user_name}</div>
-                </div>      
-        ))}
+        <center> 
+            <h1>Attendees</h1>
+            <br></br>
+            <ol class="list-group" style={{ maxWidth:'500px'}}>
+                {attendance.map(attendee => (     
+                    <Link to={`/users/${attendee.user_id}`}>
+                        <button 
+                            type="button" 
+                            class="list-group-item list-group-item-action list-group-item-success" 
+                            style={{ borderColor: '#000000'}} 
+                            key={attendee.id}>
+                                {attendee.user_name}
+                        </button>
+                    </Link>      
+            ))}     
+            </ol> 
             <br></br>
             
             <button
                 onClick={() => handleAddAttendee()}
+                className="btn btn-info m-1"
                 disabled={!(token) || (userID === event.created_by) || isAttending}>
-                    {isAttending ? "Attending Event" : "Attend Event"}
+                    {isAttending ? "Registered" : "Register"}
             </button>
-            
-            <br></br>
             
             <button 
                 onClick={() => handleDelete()}
+                className="btn btn-info m-1"
                 disabled={!(token && isAttending) || event.created_by === userID}>
-                    Withdraw from Event
+                    Withdraw 
             </button>
 
             <br></br>
             <br></br>          
         
             <Link to='/events/'>
-                <button disabled={!(token)}>
+                <button 
+                    disabled={!(token)}>
                     Return to Events
                 </button>
-             </Link>
+            </Link>
         </center>
         </>
     )
