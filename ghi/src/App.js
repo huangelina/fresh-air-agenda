@@ -62,7 +62,7 @@ function App() {
         <Nav userData= { userData } />
         <div className="container">
             <Routes>
-                <Route exact path="/" element={<Main userData= {userData} />}/>
+                <Route exact path="/" element={userData ? <Main userData= {userData}/> : null}/>
                 <Route exact path="/signup" element={<SignupForm />}></Route>
                 <Route exact path="/login" element={<LoginForm />}></Route>
                 <Route exact path="/users/:id" element = { userData? <UserDetail userData = {userData} />: null}></Route>

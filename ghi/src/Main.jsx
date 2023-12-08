@@ -4,20 +4,32 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import OPEN_WEATHER_API_KEY from "./keys.js"
 
-function Main() {
+function Main({ userData }) {
+
+
+
+    // useState variables
     const { token } = useAuthContext();
     const [userTimelogs, setUserTimelogs ] = useState([]);
-    const [currentDate, setCurrentDate] = useState('');
-    const [userId, setUserId] = useState();
-    const [user, setUser] = useState({});
     const [weather, getWeather] = useState();
     const [events, setEvents] = useState([]);
     const [attendance, setAttendance] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
 
+    // Date
+    const date = new Date();
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+
+
+
+    // Other fetch calls
     async function fetchWeather() {
-        if (user.location) {
-            const url = `http://api.openweathermap.org/geo/1.0/direct?q=${user.location}&limit=1&appid=${OPEN_WEATHER_API_KEY}`
+        if (userData.location) {
+            const url = `http://api.openweathermap.org/geo/1.0/direct?q=${userData.location}&limit=1&appid=${OPEN_WEATHER_API_KEY}`
             const response = await fetch(url)
             if (response.ok) {
                 const data = await response.json();
@@ -32,58 +44,7 @@ function Main() {
     }
 
 
-    async function fetchData() {
-        if (token && userId) {
-            const url = `http://localhost:8000/users/${userId}/logs`;
-            const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-            if (response.ok) {
-                const timelogs = await response.json();
-                const hasLogForCurrentDate = timelogs.some((timelog) => timelog.date === currentDate);
-
-                if (!hasLogForCurrentDate) {
-                    createTimelog(userId, user);
-                } else {
-                    setUserTimelogs(timelogs);
-                }
-            } else {
-                console.error('Error fetching data');
-            }
-        }
-    }
-
-
-    useEffect(() => {
-        async function getUserID(token) {
-            if (token) {
-                const tokenUrl = 'http://localhost:8000/token';
-                const response = await fetch(tokenUrl, {
-                    headers: { Authorization: `Bearer ${token}` },
-                    credentials: "include",
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserId(data.user.id);
-                    setUser(data.user);
-                }
-            }
-        }
-        getUserID(token);
-    }, [token]);
-
-
-    useEffect(() => {
-        const date = new Date();
-        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-            .toString()
-            .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-        setCurrentDate(formattedDate);
-    }, []);
-
-    const dateFormat = { month: 'long', day: 'numeric', year: 'numeric' };
-    const formattedLongDate = new Date(currentDate).toLocaleDateString(undefined, dateFormat);
-
-
-    async function fetchEventData() {
+     async function fetchEventData() {
         if(token) {
             const url = `http://localhost:8000/events`;
             const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
@@ -111,57 +72,60 @@ function Main() {
     }
 
 
-    const matchingEventIDs = attendance.filter((item) => item.user_id === userId).map((item) => item.event_id);
 
-    const attendeeEvents = events.filter((event) => matchingEventIDs.includes(event.id));
-
+    // Time log STUFF!
 
 
-    useEffect(() => {
-        fetchData()
-        fetchWeather();
-        fetchEventData();
-        fetchAttendeeData();
-         // eslint-disable-next-line
-    }, [userId,user,token]);
+    async function fetchLogs() {
+        if (token && userData.id) {
+            const url = `http://localhost:8000/users/${userData.id}/logs`;
+            const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+            if (response.ok) {
+                const timelogs = await response.json();
+                const hasLogForCurrentDate = timelogs.some((timelog) => timelog.date === formattedDate);
 
-
-    const todaysLog = userTimelogs.find((timelog) => timelog.date === currentDate);
-
-
-    const createTimelog = async (userId, user) => {
-        try {
-            const newTimelog = {
-                date: currentDate,
-                goal: (user.goal)/7,
-                time_outside: 0,
-                user_id: userId,
-
-            };
-            const url = `http://localhost:8000/users/${userId}/logs/`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(newTimelog),
-            });
-                if (response.ok) {
-                    fetchData();
+                if (!hasLogForCurrentDate) {
+                    createTimelog(userData.id, userData);
                 } else {
-                    console.error('Error creating timelog');
+                    setUserTimelogs(timelogs);
                 }
-        } catch (error) {
-            console.error('Error:', error);
+            } else {
+                console.error('Error fetching data');
+            }
         }
-    };
+    }
+    const createTimelog = async (userData) => {
+            try {
+                const newTimelog = {
+                    date: formattedDate,
+                    goal: (userData.goal)/7,
+                    time_outside: 0,
+                    user_id: userData.id,
 
+                };
+                const url = `http://localhost:8000/users/${userData.id}/logs/`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(newTimelog),
+                });
+                    if (response.ok) {
+                        fetchLogs();
+                    } else {
+                        console.error('Error creating timelog');
+                    }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
 
-    const updateTimelog = async (newTimeOutside) => {
+        const updateTimelog = async (newTimeOutside) => {
         try {
-            if (token && userId && todaysLog) {
-                const url = `http://localhost:8000/users/${userId}/logs/${todaysLog.id}`;
+            if (token && userData.id && todaysLog) {
+                const url = `http://localhost:8000/users/${userData.id}/logs/${todaysLog.id}`;
                 const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -174,7 +138,7 @@ function Main() {
                     }),
                 });
                 if (response.ok) {
-                    fetchData();
+                    fetchLogs();
                 } else {
                     console.error('Error updating log');
                 }
@@ -185,51 +149,44 @@ function Main() {
     };
 
 
-    const incrementHour = () => {
-        if (todaysLog) {
-            const updatedTimeOutside = todaysLog.time_outside + 60;
-            updateTimelog(updatedTimeOutside);
-        }
-    };
+     useEffect(() => {
+      Promise.all([
+          fetchLogs(),
+          fetchWeather(),
+          fetchEventData(),
+          fetchAttendeeData()
 
-    const decrementHour = () => {
-    const updatedTimeOutside = todaysLog.time_outside - 60;
-    const newTimeOutside = updatedTimeOutside >= 0 ? updatedTimeOutside : 0;
-    updateTimelog(newTimeOutside);
-    };
+      ])
+      .then(() => setIsLoading(false))
+      .catch(error => console.error('Error:', error));
+      // eslint-disable-next-line
+  }, [userData, token]);
 
-    const incrementHalfHour = () => {
-        if (todaysLog) {
-            const updatedTimeOutside = todaysLog.time_outside + 15;
-            updateTimelog(updatedTimeOutside);
-        }
-    };
 
-    const decrementHalfHour = () => {
-    const updatedTimeOutside = todaysLog.time_outside - 15;
-    const newTimeOutside = updatedTimeOutside >= 0 ? updatedTimeOutside : 0;
-    updateTimelog(newTimeOutside);
-    };
+    const dateParts = formattedDate.split('-');
+    const year = dateParts[0];
+    const month = dateParts[1];
+    const day = dateParts[2];
 
-    const incrementFiveMinutes = () => {
-        if (todaysLog) {
-            const updatedTimeOutside = todaysLog.time_outside + 5;
-            updateTimelog(updatedTimeOutside);
-
-        }
-    };
-
-    const decrementFiveMinutes = () => {
-    const updatedTimeOutside = todaysLog.time_outside - 5;
-    const newTimeOutside = updatedTimeOutside >= 0 ? updatedTimeOutside : 0;
-    updateTimelog(newTimeOutside);
-    };
-
+    const formattedLongDate = `${new Date(year, month - 1, day).toLocaleString('default', { month: 'long' })} ${parseInt(day, 10)}, ${year}`;
+    const todaysLog = userTimelogs.find((timelog) => timelog.date === formattedDate);
+    const matchingEventIDs = attendance.filter((item) => item.user_id === userData.id).map((item) => item.event_id);
+    const attendeeEvents = events.filter((event) => matchingEventIDs.includes(event.id));
     const totalHours = (todaysLog && todaysLog.time_outside) ? Math.floor(todaysLog.time_outside / 60) : 0;
     const totalRemainingMinutes = (todaysLog && todaysLog.time_outside) ? todaysLog.time_outside % 60 : 0;
-
     const totalHoursForGoal = (todaysLog && todaysLog.goal) ? Math.floor(todaysLog.goal / 60) : 0;
     const totalRemainingMinutesForGoal = (todaysLog && todaysLog.goal) ? todaysLog.goal % 60 : 0;
+    const totalTimeOutside = (todaysLog && todaysLog.time_outside) ? todaysLog.time_outside / 60 : 0;
+    const goal = (userData && userData.goal) ? userData.goal: 0;
+
+    function timeChange(time) {
+        if (todaysLog) {
+            const updatedTimeOutside = todaysLog.time_outside + time
+            updateTimelog(updatedTimeOutside)
+        }
+    }
+
+
 
 
     ChartJS.register(
@@ -239,8 +196,7 @@ function Main() {
     );
 
 
-    const totalTimeOutside = (todaysLog && todaysLog.time_outside) ? todaysLog.time_outside / 60 : 0;
-    const goal = (user && user.goal) ? user.goal: 0;
+
 
     let remainingTime = (totalTimeOutside > goal) ? 0 : goal/7/60 - totalTimeOutside
     if (remainingTime <= 0) {
@@ -275,11 +231,11 @@ function Main() {
     };
 
 
-    if (user && weather){
+    if (isLoading === false && todaysLog){
         return (
             <>
             <div style={{ marginLeft: '70px', color: '#2E4053', paddingTop: '50px'}}>
-                <h1>{user.first}'s FreshAir Agenda</h1>
+                <h1>{userData.first}'s FreshAir Agenda</h1>
             </div>
             <div style={{ marginLeft: '70px', marginRight: '70px', marginTop: '35px', marginBottom: '35px'}}>
                 <>
@@ -324,42 +280,42 @@ function Main() {
                                         padding: '10px',
                                         borderRadius: '20px'
                                     }}
-                                        onClick={incrementHour}>+ 1 hr</button>
+                                        onClick={() => timeChange(60)}>+ 1 hr</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#5adbb5',
                                         border: 'none',
                                         padding: '10px',
                                         borderRadius: '20px'
-                                    }} onClick={incrementHalfHour}>+ 15 min</button>
+                                    }} onClick={() => timeChange(15)}>+ 15 min</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#5adbb5',
                                         border: 'none',
                                         padding: '10px',
                                         borderRadius: '20px'
-                                    }} onClick={incrementFiveMinutes}>+ 5 min</button>
+                                    }} onClick={() => timeChange(5)}>+ 5 min</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#EBEDEF',
                                         border: 'none',
                                         padding: '10px',
                                         borderRadius: '20px'
-                                    }} onClick={decrementFiveMinutes}>- 5 min</button>
+                                    }} onClick={() => timeChange(-5)}>- 5 min</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#EBEDEF',
                                         border: 'none',
                                         padding: '10px',
                                         borderRadius: '20px'
-                                    }} onClick={decrementHalfHour}>- 15 min</button>
+                                    }} onClick={() => timeChange(-15)}>- 15 min</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#EBEDEF',
                                         border: 'none',
                                         padding: '10px',
                                         borderRadius: '20px'
-                                    }} onClick={decrementHour}>- 1 hr</button>
+                                    }} onClick={() => timeChange(-60)}>- 1 hr</button>
                                 </div>
                                 </div>
                             </>
