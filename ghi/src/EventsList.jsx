@@ -9,7 +9,6 @@ const EventsList = () => {
     const [events, setEvents] = useState([]);
     const [userID, setUserID] = useState(null);
 
-
     const getEventData = async () => {
         if (token) {
             try {  
@@ -20,6 +19,8 @@ const EventsList = () => {
                 if (event_response.ok) {
                     const eventData = await event_response.json();
                     setEvents(eventData);
+                    
+                    console.log(eventData)
                 }
                 else {
                     throw new Error('Response did not return ok');

@@ -58,7 +58,7 @@ const EventsForm = () => {
 
         const bodyData = {
             ...formData,
-            image_url: formData.image_url.trim() !== '' ? formData.image_url : undefined,
+            image_url: formData.image_url.trim() !== '' ? formData.image_url : '',
         }
         
         const event_response = await fetch(`http://localhost:8000/events`, {
@@ -143,6 +143,7 @@ const EventsForm = () => {
                 time: `${hours}:${minutes}:00`,
             });
         }
+
         else {
             setFormData({
                 ...formData,

@@ -145,17 +145,19 @@ const EventAttendance = () => {
         <center> 
             <h1>Attendees</h1>
             <br></br>
-            <ol class="list-group" style={{ maxWidth:'500px'}}>
-                {attendance.map(attendee => (     
+            <ol className="list-group" style={{ maxWidth:'500px'}}>
+                {attendance.map(attendee => (
+                    <div key={attendee.id}> 
                     <Link to={`/users/${attendee.user_id}`}>
                         <button 
                             type="button" 
-                            class="list-group-item list-group-item-action list-group-item-success" 
+                            className="list-group-item list-group-item-action list-group-item-success" 
                             style={{ borderColor: '#000000'}} 
                             key={attendee.id}>
                                 {attendee.user_name}
                         </button>
-                    </Link>      
+                    </Link>
+                    </div>      
             ))}     
             </ol> 
             <br></br>

@@ -5,7 +5,13 @@ import { useAuthContext} from "@galvanize-inc/jwtdown-for-react";
 const EventUpdate = () => {
     const { token } = useAuthContext();
     const { id } = useParams();
-    const [event, setEvent] = useState([]);
+    const [event, setEvent] = useState({
+        name: "",
+        date: "",
+        time: "",
+        image_url: "",
+        description: "",
+    });
     const [userID, setUserID] = useState(null);
     
     const getEventData = async () => {
