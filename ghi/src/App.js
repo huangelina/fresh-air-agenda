@@ -9,11 +9,9 @@ import EventsForm from "./EventsForm.jsx"
 import EventAttendance from "./EventAttendance.jsx"
 import EventUpdate from "./EventUpdate.jsx"
 import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
-import { BrowserRouter, Routes, Route} from "react-router-dom";
-import {useEffect, useState} from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from 'react';
 import Nav from './Nav.js'
-
-
 
 function App() {
     const domain = /https:\/\/[^/]+/;
@@ -22,7 +20,7 @@ function App() {
     const { token } = useAuthContext();
     const [ userData, setUserData ] = useState(null);
     const [ events, setEvents ] = useState([]);
-    const [ timelogs, setTimelogs ] = useState([]);
+    const [ userTimelogs, setTimelogs ] = useState([]);
 
     const date = new Date();
     const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -97,7 +95,7 @@ function App() {
                 user_id: userData.id,
 
             };
-            const url = `http://localhost:8000/users/${userData.id}/logs/`;
+            const url = `${process.env.REACT_APP_API_HOST}/users/${userData.id}/logs/`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -107,7 +105,7 @@ function App() {
                 body: JSON.stringify(newTimelog),
             });
                 if (response.ok) {
-                    fetchData();  // App.js fetchData
+                    fetchData();
                 } else {
                     console.error('Error creating timelog');
                 }
@@ -115,7 +113,6 @@ function App() {
             console.error('Error:', error);
         }
     };
-
 
     useEffect(() => {
         fetchData();
@@ -126,21 +123,20 @@ function App() {
   return (
 
    <BrowserRouter basename={basename}>
-        <Nav userData= { userData } />
+        <Nav userData={userData} />
         <div className="container">
             <Routes>
-              <Route exact path="/" element={userData && timelogs && events ? <Main userData={userData} timelogs={timelogs} events={events} fetchData={fetchData} /> : null}/>
+              <Route exact path="/" element={userData && userTimelogs && events ? <Main token={token} userData={userData} userTimelogs={userTimelogs} events={events} fetchData={fetchData} /> : null}/>
               <Route exact path="/signup" element={<SignupForm />}></Route>
               <Route exact path="/login" element={<LoginForm />}></Route>
-              <Route exact path="/users/:id" element = {userData ? <UserDetail userData={userData} />: null}></Route>
-              <Route exact path="/metrics" element={<Metrics />}></Route>
-              <Route exact path="/events" element={<EventsList />}></Route>
-              <Route exact path="/events/new" element={<EventsForm />}></Route>
-              <Route exact path="/events/:id/attendance" element={<EventAttendance />}></Route>
-              <Route exact path="/events/:id" element={<EventUpdate />}></Route>
+              <Route exact path="/users/:id" element = {userData ? <UserDetail token={token} userData={userData} />: null}></Route>
+              <Route exact path="/metrics" element={<Metrics token={token} userTimelogs={userTimelogs} />}></Route>
+              <Route exact path="/events" element={<EventsList token={token} userData={userData} events={events} fetchData={fetchData} />}></Route>
+              <Route exact path="/events/new" element={<EventsForm token={token} userData={userData} fetchData={fetchData} />}></Route>
+              <Route exact path="/events/:id/attendance" element={<EventAttendance token={token} userData={userData} />}></Route>
+              <Route exact path="/events/:id" element={<EventUpdate token={token} userData={userData} fetchData={fetchData} />}></Route>
           </Routes>
         </div>
-
     </BrowserRouter>
   );
 }

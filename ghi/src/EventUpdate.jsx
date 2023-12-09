@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useAuthContext} from "@galvanize-inc/jwtdown-for-react";
 
-const EventUpdate = () => {
-    const { token } = useAuthContext();
+const EventUpdate = ({ token, userData, fetchData }) => {
     const { id } = useParams();
     const [event, setEvent] = useState({
         name: "",
@@ -12,12 +10,11 @@ const EventUpdate = () => {
         image_url: "",
         description: "",
     });
-    const [userID, setUserID] = useState(null);
-    
+
     const getEventData = async () => {
         if (token) {
-            try {  
-                const event_response = await fetch(`http://localhost:8000/events/${id}`, {
+            try {
+                const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                     credentials: "include",
                 });
@@ -30,48 +27,24 @@ const EventUpdate = () => {
                 }
             }
             catch (error) {
-                console.error('Failed to fetch data', error); 
+                console.error('Failed to fetch data', error);
 
             }
         }
-    }    
+    }
 
-    const getUserData = async () => {
-        if (token) {  
-            try {
-                const user_response = await fetch('http://localhost:8000/token', {
-                    headers: { Authorization: `Bearer ${token}` },
-                    credentials: "include",
-                })
-
-                if (user_response.ok) {
-                    const userData = await user_response.json();
-                    setUserID(userData.user.id)
-                }
-                else {
-                    throw new Error('Response did not return ok');
-                }
-            }
-            catch (error) {
-                console.error('Failed to fetch data', error);
-            }
-        }   
-    };
-    
 
     useEffect(() => {
         getEventData();
-        getUserData();
-
         // eslint-disable-next-line
     }, [token])
 
     const handleDataChange = async (e) => {
         e.preventDefault();
 
-        if (token && event.created_by === userID) {
+        if (token && event.created_by === userData.id) {
             try {
-                const response = await fetch(`http://localhost:8000/events/${id}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_HOST}/events/${id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -81,14 +54,15 @@ const EventUpdate = () => {
                 });
 
                 if (response.ok) {
+                    fetchData();
                     window.alert("Successfully updated Event!")
-                    window.location.href = 'http://localhost:3000/events'
+                    window.location.href = `${process.env.PUBLIC_URL}/events`
                 }
                 else {
                     throw new Error('Response did not return ok');
                 }
             }
-            
+
             catch (error) {
                 console.error('Error updating Event:', error);
             }

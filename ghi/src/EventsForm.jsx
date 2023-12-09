@@ -1,13 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom'
-import { useAuthContext} from "@galvanize-inc/jwtdown-for-react";
 import './EventStyle.css';
 
-const EventsForm = () => {
-    const { token } = useAuthContext();
-    const [userLocation, setUserLocation] = useState([]);
-    const [hostUser, setHostUser] = useState([]);
-    const [hostID, setHostID] = useState([]);
+const EventsForm = ({ token, userData, fetchData }) => {
     const [formData, setFormData] = useState({
         name: '',
         date: '',
@@ -19,40 +14,6 @@ const EventsForm = () => {
         hosted_by: ''
     })
 
-    const getData = async () => {
-        if (token) {
-            try {
-                const user_response = await fetch('http://localhost:8000/token', {
-                    credentials: "include",
-                })
-                if (user_response.ok) {
-                    const userData = await user_response.json();
-
-                    const userLocation = (userData.user.location);
-                    setUserLocation(userLocation)
-
-                    const userID = (userData.user.id);
-                    setHostID(userID)
-
-                    const userName = (userData.user.first + " " + userData.user.last);
-                    setHostUser(userName)
-                }
-                else {
-                    throw new Error('Response did not return ok');
-                }
-            }
-            catch (error) {
-                console.error('Failed to fetch data', error)
-            }
-        }
-    }
-
-    useEffect(() => {
-        getData()
-
-        // eslint-disable-next-line
-    }, [token]);
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -60,8 +21,8 @@ const EventsForm = () => {
             ...formData,
             image_url: formData.image_url.trim() !== '' ? formData.image_url : '',
         }
-        
-        const event_response = await fetch(`http://localhost:8000/events`, {
+
+        const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events`, {
             method: "POST",
             body: JSON.stringify(bodyData),
             headers: {
@@ -69,17 +30,18 @@ const EventsForm = () => {
                 Authorization: `Bearer ${token}`
             },
         });
-        
+        fetchData();
+
         const created_event = await event_response.json();
-        
+
         const eventID = created_event.id;
         const attendeesData = {
-            user_id: hostID,
+            user_id: userData.id,
             event_id: eventID,
-            user_name: hostUser
+            user_name: `${userData.first} ${userData.last}`
         };
-        
-        const attendees_response = await fetch(`http://localhost:8000/attendance`, {
+
+        const attendees_response = await fetch(`${process.env.REACT_APP_API_HOST}/attendance`, {
             method: "POST",
             body: JSON.stringify(attendeesData),
             headers: {
@@ -122,7 +84,7 @@ const EventsForm = () => {
 
             if (value.includes("AM")) {
                 period = "AM";
-            } 
+            }
             else if (value.includes("PM")) {
                 period = "PM";
             }
@@ -137,7 +99,7 @@ const EventsForm = () => {
             else if (period === "AM" && hours === 12) {
                 hours = 0;
             }
-            
+
             setFormData({
                 ...formData,
                 time: `${hours}:${minutes}:00`,
@@ -148,9 +110,9 @@ const EventsForm = () => {
             setFormData({
                 ...formData,
                 [inputName]: value,
-                location: userLocation,
-                created_by: hostID,
-                hosted_by: hostUser,
+                location: userData.location,
+                created_by: userData.id,
+                hosted_by: `${userData.first} ${userData.last}`,
             });
         }
     };
@@ -159,51 +121,51 @@ const EventsForm = () => {
         <>
         <br></br>
         <center>
-        <h2> Create Event </h2>  
+        <h2> Create Event </h2>
         <div className="card text-bg-light mb-3" style={{ width: "25rem" }}>
             <div className="card-body">
                 <form onSubmit={handleSubmit} id="create-event-form">
                 <div className="mb-3">
-                    <input  
+                    <input
                         className="form-control"
                         placeholder="Event Name"
-                        required 
-                        type="text" 
+                        required
+                        type="text"
                         name="name"
                         value={formData.name}
-                        onChange={handleFormChange} 
+                        onChange={handleFormChange}
                     />
                 </div>
 
                 <div className="mb-3">
                     <input
-                        className="form-control" 
-                        placeholder="Date" 
-                        required 
-                        type="date" 
+                        className="form-control"
+                        placeholder="Date"
+                        required
+                        type="date"
                         name="date"
                         value={formData.date}
-                        onChange={handleFormChange} 
-                    />
-                </div>
-
-                <div className="mb-3">
-                    <input  
-                        className="form-control"
-                        placeholder="Time"
-                        required 
-                        type="time" 
-                        name="time"
-                        value={formData.time}
-                        onChange={handleFormChange} 
+                        onChange={handleFormChange}
                     />
                 </div>
 
                 <div className="mb-3">
                     <input
                         className="form-control"
-                        placeholder="Picture URL (optional)" 
-                        type="text" 
+                        placeholder="Time"
+                        required
+                        type="time"
+                        name="time"
+                        value={formData.time}
+                        onChange={handleFormChange}
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <input
+                        className="form-control"
+                        placeholder="Picture URL (optional)"
+                        type="text"
                         name="image_url"
                         value={formData.image_url}
                         onChange={handleFormChange}
@@ -214,12 +176,12 @@ const EventsForm = () => {
                     <textarea
                         className="form-control"
                         placeholder="Description"
-                        required 
-                        type="text" 
+                        required
+                        type="text"
                         name="description"
                         value={formData.description}
                         onChange={handleFormChange}
-                    /> 
+                    />
                 </div>
 
                 <button className="btn btn-success mb-2" type="submit">
@@ -227,7 +189,7 @@ const EventsForm = () => {
                 </button>
 
                 <br></br>
-                
+
                 <Link to='/events/'>
                     <button className="btn btn-primary">
                         Return to Events

@@ -1,26 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useAuthContext} from "@galvanize-inc/jwtdown-for-react";
 
 
 
-const EventAttendance = () => {
-    
-    const { token } = useAuthContext();
+const EventAttendance = ({ token, userData }) => {
+
     const [attendance, setAttendance] = useState([]);
     const { id } = useParams();
-    const [userID, setUserID] = useState(null);
-    const [userName, setUserName] = useState(null);
     const [event, setEvent] = useState([]);
-    const isAttending = attendance.some((attendee) => attendee.user_id === userID);
+    const isAttending = attendance.some((attendee) => attendee.user_id === userData.id);
 
     const getAttendanceData = async () => {
         if (token) {
             try {
-                const response = await fetch('http://localhost:8000/attendance');
+                const response = await fetch(`${process.env.REACT_APP_API_HOST}/attendance`);
                 if (response.ok) {
                     const attendanceList = await response.json();
-             
+
                     const filteredAttendance = attendanceList.filter((attendee) => attendee.event_id === parseInt(id));
                     setAttendance((filteredAttendance));
                 }
@@ -29,40 +25,16 @@ const EventAttendance = () => {
                 }
             }
             catch (error) {
-                console.error('Failed to fetch data', error); 
-            }
-        }
-    }
-
-    const getUserData = async () => {
-        if (token) {  
-            try {
-                const user_response = await fetch('http://localhost:8000/token', {
-                    credentials: "include",
-                })
-
-                if (user_response.ok) {
-                    const userData = await user_response.json();
-
-                    setUserID(userData.user.id);
-                    setUserName(userData.user.first + " " + userData.user.last)
-
-                }
-                else {
-                    throw new Error('Response did not return ok');
-                }          
-            }
-            catch (error) {
                 console.error('Failed to fetch data', error);
             }
         }
-        
     }
+
 
      const getEventData = async () => {
         if (token) {
-            try {  
-                const event_response = await fetch(`http://localhost:8000/events/${id}`, {
+            try {
+                const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                     credentials: "include",
                 });
@@ -75,15 +47,14 @@ const EventAttendance = () => {
                 }
             }
             catch (error) {
-                console.error('Failed to fetch data', error); 
+                console.error('Failed to fetch data', error);
 
             }
         }
-    }    
+    }
 
     useEffect(() => {
         getAttendanceData();
-        getUserData();
         getEventData();
 
         // eslint-disable-next-line
@@ -92,12 +63,12 @@ const EventAttendance = () => {
     const handleAddAttendee = async () => {
 
         const attendeesData = {
-            user_id: userID,
+            user_id: userData.id,
             event_id: id,
-            user_name: userName
+            user_name: `${userData.first} ${userData.last}`
         };
-        
-        const attendees_response = await fetch(`http://localhost:8000/attendance`, {
+
+        const attendees_response = await fetch(`${process.env.REACT_APP_API_HOST}/attendance`, {
             method: "POST",
             body: JSON.stringify(attendeesData),
             headers: {
@@ -105,7 +76,7 @@ const EventAttendance = () => {
                 Authorization: `Bearer ${token}`
             },
         });
-        
+
         if (attendees_response.ok) {
             window.location.reload();
             window.alert("Successfully registered for Event!")
@@ -114,10 +85,10 @@ const EventAttendance = () => {
     }
 
     const handleDelete = async () => {
-        const userToDelete = attendance.find(obj => obj.user_id === userID);
+        const userToDelete = attendance.find(obj => obj.user_id === userData.id);
 
-        if (token && userID === userToDelete.user_id) {
-            const response = await fetch(`http://localhost:8000/attendance/${userToDelete.id}`, {
+        if (token && userData.id === userToDelete.user_id) {
+            const response = await fetch(`${process.env.REACT_APP_API_HOST}/attendance/${userToDelete.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,7 +97,6 @@ const EventAttendance = () => {
             });
 
             if(response.ok) {
-                getEventData()
                 window.alert("Successfully withdrew from Event!")
                 window.location.reload();
             }
@@ -138,49 +108,49 @@ const EventAttendance = () => {
             console.error('Unauthorized to delete event');
         }
     }
-   
+
 
     return (
         <>
-        <center> 
+        <center>
             <h1>Attendees</h1>
             <br></br>
             <ol className="list-group" style={{ maxWidth:'500px'}}>
                 {attendance.map(attendee => (
-                    <div key={attendee.id}> 
+                    <div key={attendee.id}>
                     <Link to={`/users/${attendee.user_id}`}>
-                        <button 
-                            type="button" 
-                            className="list-group-item list-group-item-action list-group-item-success" 
-                            style={{ borderColor: '#000000'}} 
+                        <button
+                            type="button"
+                            className="list-group-item list-group-item-action list-group-item-success"
+                            style={{ borderColor: '#000000'}}
                             key={attendee.id}>
                                 {attendee.user_name}
                         </button>
                     </Link>
-                    </div>      
-            ))}     
-            </ol> 
+                    </div>
+            ))}
+            </ol>
             <br></br>
-            
+
             <button
                 onClick={() => handleAddAttendee()}
                 className="btn btn-info m-1"
-                disabled={!(token) || (userID === event.created_by) || isAttending}>
+                disabled={!(token) || (userData.id === event.created_by) || isAttending}>
                     {isAttending ? "Registered" : "Register"}
             </button>
-            
-            <button 
+
+            <button
                 onClick={() => handleDelete()}
                 className="btn btn-info m-1"
-                disabled={!(token && isAttending) || event.created_by === userID}>
-                    Withdraw 
+                disabled={!(token && isAttending) || event.created_by === userData.id}>
+                    Withdraw
             </button>
 
             <br></br>
-            <br></br>          
-        
+            <br></br>
+
             <Link to='/events/'>
-                <button 
+                <button
                     disabled={!(token)}>
                     Return to Events
                 </button>

@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import OPEN_WEATHER_API_KEY from "./keys.js"
 
-function Main({ userData, events, timelogs, fetchData }) {
-    const { token } = useAuthContext();
+function Main({ token, userData, events, userTimelogs, fetchData }) {
     const [weather, getWeather] = useState();
     const [attendance, setAttendance] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +35,7 @@ function Main({ userData, events, timelogs, fetchData }) {
 
     async function fetchAttendeeData() {
         if(token) {
-            const url = `http://localhost:8000/attendance`;
+            const url = `${process.env.REACT_APP_API_HOST}/attendance`;
             const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
             if (response.ok) {
                 const eventAttendance = await response.json();
@@ -53,7 +51,7 @@ function Main({ userData, events, timelogs, fetchData }) {
         const updateTimelog = async (newTimeOutside) => {
         try {
             if (token && userData.id && todaysLog) {
-                const url = `http://localhost:8000/users/${userData.id}/logs/${todaysLog.id}`;
+                const url = `${process.env.REACT_APP_API_HOST}/users/${userData.id}/logs/${todaysLog.id}`;
                 const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -66,7 +64,7 @@ function Main({ userData, events, timelogs, fetchData }) {
                     }),
                 });
                 if (response.ok) {
-                    fetchData();  // App.js fetchData
+                    fetchData();
                 } else {
                     console.error('Error updating log');
                 }
@@ -94,7 +92,7 @@ function Main({ userData, events, timelogs, fetchData }) {
     const day = dateParts[2];
 
     const formattedLongDate = `${new Date(year, month - 1, day).toLocaleString('default', { month: 'long' })} ${parseInt(day, 10)}, ${year}`;
-    const todaysLog = timelogs.find((timelog) => timelog.date === formattedDate);
+    const todaysLog = userTimelogs.find((timelog) => timelog.date === formattedDate);
     const matchingEventIDs = attendance.filter((item) => item.user_id === userData.id).map((item) => item.event_id);
     const attendeeEvents = events.filter((event) => matchingEventIDs.includes(event.id));
     const totalHours = (todaysLog && todaysLog.time_outside) ? Math.floor(todaysLog.time_outside / 60) : 0;

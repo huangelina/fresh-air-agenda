@@ -1,16 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState} from 'react';
-import { useAuthContext } from "@galvanize-inc/jwtdown-for-react";
 import useToken from "@galvanize-inc/jwtdown-for-react";
 import { useNavigate } from "react-router-dom";
 
-const UserDetail = ({ userData }) => {
-
-
-
+const UserDetail = ({ token, userData }) => {
    const navigate = useNavigate();
    const { logout } = useToken();
-   const { token } = useAuthContext();
    const [user, setUser] = useState({
        first: "",
        last: "",
@@ -35,7 +30,7 @@ const UserDetail = ({ userData }) => {
 
      const fetchData = async () => {
         if (token && lock===false) {
-            const url = `http://localhost:8000/users/${id}`;
+            const url = `${process.env.REACT_APP_API_HOST}/users/${id}`;
             try {
                 const response = await fetch(url, {
                     headers: { Authorization: `Bearer ${token}` },
@@ -85,7 +80,7 @@ const UserDetail = ({ userData }) => {
 
         try {
             const response = await fetch(
-                `http://localhost:8000/users/${id}`,
+                `${process.env.REACT_APP_API_HOST}/users/${id}`,
                 {
                     method: "PUT",
                     credentials: "include",

@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import useToken from "@galvanize-inc/jwtdown-for-react";
 
 

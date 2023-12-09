@@ -3,8 +3,6 @@ import { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 
 
-
-
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +16,6 @@ const LoginForm = () => {
     e.target.reset();
     navigate("/");
   };
-
 
 
   return (

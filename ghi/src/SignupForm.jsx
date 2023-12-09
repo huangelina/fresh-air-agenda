@@ -31,7 +31,7 @@ const SignupForm = () => {
     };
     try {
       const response = await fetch(
-        "http://localhost:8000/users",
+        `${process.env.REACT_APP_API_HOST}/users`,
         {
           method: "POST",
           credentials: "include",
