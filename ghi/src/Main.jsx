@@ -4,29 +4,21 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import OPEN_WEATHER_API_KEY from "./keys.js"
 
-function Main({ userData }) {
-
-
-
-    // useState variables
+function Main({ userData, events, timelogs, fetchData }) {
     const { token } = useAuthContext();
-    const [userTimelogs, setUserTimelogs ] = useState([]);
     const [weather, getWeather] = useState();
-    const [events, setEvents] = useState([]);
     const [attendance, setAttendance] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-
     // Date
+
     const date = new Date();
     const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
         .toString()
         .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 
-
-
-
     // Other fetch calls
+
     async function fetchWeather() {
         if (userData.location) {
             const url = `http://api.openweathermap.org/geo/1.0/direct?q=${userData.location}&limit=1&appid=${OPEN_WEATHER_API_KEY}`
@@ -41,22 +33,7 @@ function Main({ userData }) {
                 }
             }
         }
-    }
-
-
-     async function fetchEventData() {
-        if(token) {
-            const url = `http://localhost:8000/events`;
-            const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-            if (response.ok) {
-                const existingEvents = await response.json();
-                setEvents(existingEvents);
-            } else {
-                console.error('Error fetching event data');
-            }
-        }
-    }
-
+    };
 
     async function fetchAttendeeData() {
         if(token) {
@@ -69,58 +46,9 @@ function Main({ userData }) {
                 console.error('Error fetching attendance data');
             }
         }
-    }
+    };
 
-
-
-    // Time log STUFF!
-
-
-    async function fetchLogs() {
-        if (token && userData.id) {
-            const url = `http://localhost:8000/users/${userData.id}/logs`;
-            const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-            if (response.ok) {
-                const timelogs = await response.json();
-                const hasLogForCurrentDate = timelogs.some((timelog) => timelog.date === formattedDate);
-
-                if (!hasLogForCurrentDate) {
-                    createTimelog(userData.id, userData);
-                } else {
-                    setUserTimelogs(timelogs);
-                }
-            } else {
-                console.error('Error fetching data');
-            }
-        }
-    }
-    const createTimelog = async (userData) => {
-            try {
-                const newTimelog = {
-                    date: formattedDate,
-                    goal: (userData.goal)/7,
-                    time_outside: 0,
-                    user_id: userData.id,
-
-                };
-                const url = `http://localhost:8000/users/${userData.id}/logs/`;
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(newTimelog),
-                });
-                    if (response.ok) {
-                        fetchLogs();
-                    } else {
-                        console.error('Error creating timelog');
-                    }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
+    // Update Timelog
 
         const updateTimelog = async (newTimeOutside) => {
         try {
@@ -138,7 +66,7 @@ function Main({ userData }) {
                     }),
                 });
                 if (response.ok) {
-                    fetchLogs();
+                    fetchData();  // App.js fetchData
                 } else {
                     console.error('Error updating log');
                 }
@@ -149,18 +77,15 @@ function Main({ userData }) {
     };
 
 
-     useEffect(() => {
-      Promise.all([
-          fetchLogs(),
-          fetchWeather(),
-          fetchEventData(),
-          fetchAttendeeData()
-
-      ])
-      .then(() => setIsLoading(false))
-      .catch(error => console.error('Error:', error));
-      // eslint-disable-next-line
-  }, [userData, token]);
+    useEffect(() => {
+        Promise.all([
+            fetchWeather(),
+            fetchAttendeeData()
+        ])
+        .then(() => setIsLoading(false))
+        .catch(error => console.error('Error:', error));
+    // eslint-disable-next-line
+    }, [userData, token]);
 
 
     const dateParts = formattedDate.split('-');
@@ -169,7 +94,7 @@ function Main({ userData }) {
     const day = dateParts[2];
 
     const formattedLongDate = `${new Date(year, month - 1, day).toLocaleString('default', { month: 'long' })} ${parseInt(day, 10)}, ${year}`;
-    const todaysLog = userTimelogs.find((timelog) => timelog.date === formattedDate);
+    const todaysLog = timelogs.find((timelog) => timelog.date === formattedDate);
     const matchingEventIDs = attendance.filter((item) => item.user_id === userData.id).map((item) => item.event_id);
     const attendeeEvents = events.filter((event) => matchingEventIDs.includes(event.id));
     const totalHours = (todaysLog && todaysLog.time_outside) ? Math.floor(todaysLog.time_outside / 60) : 0;
@@ -184,9 +109,7 @@ function Main({ userData }) {
             const updatedTimeOutside = todaysLog.time_outside + time
             updateTimelog(updatedTimeOutside)
         }
-    }
-
-
+    };
 
 
     ChartJS.register(
@@ -196,12 +119,11 @@ function Main({ userData }) {
     );
 
 
-
-
     let remainingTime = (totalTimeOutside > goal) ? 0 : goal/7/60 - totalTimeOutside
     if (remainingTime <= 0) {
         remainingTime = 0;
-    }
+    };
+
 
     const data = {
         labels: ['Time spent outside', 'Time remaining'],
@@ -214,7 +136,8 @@ function Main({ userData }) {
             backgroundColor: ['#8AFF8A', '#EBEDEF'],
             borderColor: ['white', 'white'],
         }]
-    }
+    };
+
 
     const options = {
         radius: 260,
