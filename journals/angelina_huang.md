@@ -1,3 +1,23 @@
+## December 08, 2023
+
+This week I worked on:
+* Main page functionaily and css
+* Adding weekly logs to metrics page and css
+* Unit tests for get and create user timelogs
+
+This week our team worked on fixing bugs for all
+our pages. We also worked on styling together. We
+were able to reach all our required checkpoints.
+
+During this week I spent a lot of time learning how
+to format dates in order for them to show up in a
+reable manner for the user. I also spent a good
+amount of time working on css for the main and
+metrics page. Displaying graphs and and getting data
+to show up on the graphs was difficult, but it ended
+up working out.
+
+
 ## December 01, 2023
 
 This week I worked on:
