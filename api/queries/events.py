@@ -13,7 +13,7 @@ class EventIn(BaseModel):
     date: date
     time: time
     image_url: Optional[str]
-    description: Optional[str]
+    description: str
     location: str
     created_by: int
     hosted_by: str
@@ -25,7 +25,7 @@ class EventOut(BaseModel):
     date: date
     time: time
     image_url: Optional[str]
-    description: Optional[str]
+    description: str
     location: str
     created_by: int
     hosted_by: str
