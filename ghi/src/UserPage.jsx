@@ -107,6 +107,7 @@ const UserDetail = ({ token, userData }) => {
             if (response.ok) {
                 setUser({...user, ...accountData});
                 logout()
+                window.location.reload()
                 navigate("/login")
             } else {
                 console.error('Failed to update user data:', response.statusText);
