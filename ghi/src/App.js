@@ -68,7 +68,6 @@ function App() {
                                 createTimelog(data.user);
                             } else {
                                 setTimelogs(timelogs);
-                                console.log({"message": "log exists"});
                             }
                         } else {
                             throw new Error('Network response was not ok');
