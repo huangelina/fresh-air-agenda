@@ -21,3 +21,11 @@ Got work done on userpage and frontend auth, working on mainpage frontend
 Convos were good and we worked as a team for some blocker solving
 
 No big ah-hah moments.
+
+## Nov Dec 4th to 8th
+
+Added prop drilling to user page and main, fixed bugs and added css to user page
+
+Convos were good, worked with Dylan to get prop drilling working on main
+
+No big ah-hah moments.

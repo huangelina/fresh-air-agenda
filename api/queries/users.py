@@ -209,11 +209,10 @@ class UserQueries:
                             email,
                             location,
                             goal,
-                            avatar_picture,
                             bio
                         )
                         VALUES
-                            (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            (%s, %s, %s, %s, %s, %s, %s, %s)
                         RETURNING id;
                         """,
                         [
@@ -224,7 +223,6 @@ class UserQueries:
                             user.email,
                             user.location,
                             user.goal,
-                            user.avatar_picture,
                             user.bio
                         ]
                     )

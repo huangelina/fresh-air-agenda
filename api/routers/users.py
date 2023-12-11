@@ -58,7 +58,7 @@ async def get_token(
 @router.get("/users", response_model=Union[List[UserOut], Error])
 def get_all_users(
     repo: UserQueries = Depends(),
-
+    account_data: dict = Depends(authenticator.get_current_account_data)
 ):
     return repo.get_all()
 

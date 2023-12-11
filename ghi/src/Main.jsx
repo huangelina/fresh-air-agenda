@@ -3,10 +3,13 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import OPEN_WEATHER_API_KEY from "./keys.js"
 
+
 function Main({ token, userData, events, userTimelogs, fetchData }) {
     const [weather, getWeather] = useState();
     const [attendance, setAttendance] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
+
 
     // Date
 
@@ -84,6 +87,7 @@ function Main({ token, userData, events, userTimelogs, fetchData }) {
         .catch(error => console.error('Error:', error));
     // eslint-disable-next-line
     }, [userData, token]);
+
 
 
     const dateParts = formattedDate.split('-');
@@ -247,5 +251,6 @@ function Main({ token, userData, events, userTimelogs, fetchData }) {
         );
     }
 }
+
 
 export default Main;

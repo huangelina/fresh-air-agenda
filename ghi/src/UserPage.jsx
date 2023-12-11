@@ -4,6 +4,9 @@ import useToken from "@galvanize-inc/jwtdown-for-react";
 import { useNavigate } from "react-router-dom";
 
 const UserDetail = ({ token, userData }) => {
+
+// useState variables
+
    const navigate = useNavigate();
    const { logout } = useToken();
    const [user, setUser] = useState({
@@ -22,14 +25,16 @@ const UserDetail = ({ token, userData }) => {
    const [isUser, setisUser] = useState(false);
 
    const { id } = useParams();
-   const [lock, setLock] = useState(false)
+
+// loading effect to get userData
+   const [isLoading, setIsLoading] = useState(true);
 
 
    useEffect(() => {
 
-
+// fetch user data if not the logged in user
      const fetchData = async () => {
-        if (token && lock===false) {
+        if (token) {
             const url = `${process.env.REACT_APP_API_HOST}/users/${id}`;
             try {
                 const response = await fetch(url, {
@@ -40,7 +45,7 @@ const UserDetail = ({ token, userData }) => {
                 if (response.ok) {
                     const data = await response.json();
                     setUser(data)
-                    setLock(true)
+
                     } else {
                     throw new Error('Network response was not ok');
                 }
@@ -49,18 +54,25 @@ const UserDetail = ({ token, userData }) => {
             }
         }
     };
-
-    if (userData.id === parseInt(id) && lock===false) {
+// if logged in user, set page to prop data and enable editing
+    if (userData.id === parseInt(id)) {
         setUser(userData)
         setisUser(true);
-        setLock(true)
+        Promise.all([
+        setUser(userData),
+        setisUser(true),
+        ])
+        .then(() => setIsLoading(false))
     }
 
     else {
-        fetchData()
+        Promise.all([
+            fetchData(),
+        ])
+        .then(() => setIsLoading(false))
     }
 
-   }, [userData,id,lock,token]);
+   }, [userData,id,token]);
 
    const handleDataChange = async (e) => {
        e.preventDefault();
@@ -107,7 +119,7 @@ const UserDetail = ({ token, userData }) => {
     }
 };
 
-if (user) {
+if (user && isLoading === false) {
   return (
         <div>
           <div className="container py-2 h-100">
@@ -171,7 +183,7 @@ if (user) {
             </div>
       )}
 </div>
-
+{/* Edit form  */}
 <div>
     {isEditable === true &&(
                   <div className="card text-bg-dark mb-3">
