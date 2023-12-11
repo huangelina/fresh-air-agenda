@@ -1,41 +1,53 @@
 import { Link } from 'react-router-dom';
 
-
 const EventsList = ({ token, userData, events, fetchData }) => {
     const handleDelete = async (event) => {
         if (token && event.created_by === userData.id) {
+            const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+            
+            if (confirmDelete) {
+                await fetch(`${process.env.REACT_APP_API_HOST}/events/${event.id}/attendance`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-            const attendance_response = await fetch(`${process.env.REACT_APP_API_HOST}/events/${event.id}/attendance`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
+                const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events/${event.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (event_response.ok) {
+                    fetchData()  // fetchData() App.js
+                    window.alert("Successfully deleted Event!");
+
                 }
-            });
-
-            if (attendance_response.ok) {
-                window.alert("Removed attendees!")
-            }
-
-            const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events/${event.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
+                else {
+                    throw new Error('Response did not return ok');
                 }
-            });
-
-            if (event_response.ok) {
-                fetchData()  // fetchData() App.js
-                window.alert("Successfully deleted Event!")
-
             }
             else {
-                throw new Error('Response did not return ok');
+                return;
             }
         }
         else {
-            console.error('Unauthorized to delete event');
+            window.alert("Only the host can delete their event!")
+            return;
+        }
+    }
+
+    const updateClick = async (event) => {
+        if (token && event.created_by === userData.id) {
+            window.location.href = `${process.env.PUBLIC_URL}/events/${event.id}`;
+        }
+        else {
+            window.alert("Only the host can update their event!")
+            return;
         }
     }
 
@@ -45,27 +57,30 @@ const EventsList = ({ token, userData, events, fetchData }) => {
 
     return (
         <>
-            <center><h1>Events</h1>
+            <center>
+                <h1>Events</h1>
                 {token ? (
                     <Link to="/events/new">
-                        <button className="btn btn-primary">
-                            Create Event
+                        <button 
+                            className="btn btn-primary border border-dark m-3">
+                                Create Event
                         </button>
                     </Link>
                 ) : (
-                    <button className="btn btn-primary" disabled>
-                        Create Event
+                    <button 
+                        className="btn btn-primary border border-dark m-3" disabled>
+                            Create Event
                     </button>
                 )}
             </center>
 
-            <div className="row">
+            <div className="row justify-content-start">
                 {events.map(event => (
-                    <div key={event.id} className="col-md-4 mb-4">
-                        <div className="card" style={{ width: "23rem" }}>
-                            <center><img className="card-img-top" src={event.image_url} alt="Event Pic" /></center>
+                    <div key={event.id} className="col-4 mb-4">
+                        <div className="card border border-dark" style={{ borderRadius: "30px" }}>
+                            <center><img className="card-img-top" src={event.image_url} alt="Event Pic" style={{ borderTopLeftRadius: "30px", borderTopRightRadius: "30px"}} /></center>
                             <div className="card-body">
-                                <h5 className="card-title"><b>{event.name}</b></h5>
+                                <center><h4 className="card-title"><b>{event.name}</b></h4></center>
                                 <p className="card-text">Description: {event.description}</p>
                                 <p className="card-text">Date: {event.date}</p>
                                 <p className="card-text">Time: {convertTo12Hour(event.time)}</p>
@@ -74,28 +89,23 @@ const EventsList = ({ token, userData, events, fetchData }) => {
                             <center>
                                 <Link to={`/events/${event.id}/attendance`}>
                                     <button
-                                        className="btn btn-info m-1"
+                                        className="btn border border-dark m-1"
+                                        style={{backgroundColor: "#9adbac"}}
                                         disabled={!token}>
                                             Attendees
                                     </button>
                                 </Link>
-
-                                {token && event.created_by === userData.id ? (
-                                    <Link to={`/events/${event.id}`}>
-                                        <button className="btn btn-success m-1">
-                                            Update
-                                        </button>
-                                    </Link>
-                                ) : (
-                                    <button className="btn btn-success m-1" disabled>
+    
+                                <button
+                                    onClick={() => updateClick(event)}
+                                    className="btn btn-danger border border-dark m-1"
+                                    style={{backgroundColor: "#ff526c"}}>
                                         Update
-                                    </button>
-                                )}
+                                </button>
 
                                 <button
                                     onClick={() => handleDelete(event)}
-                                    className="btn btn-danger m-1"
-                                    disabled={!(token && event.created_by === userData.id)}>
+                                    className="btn btn-secondary border border-dark m-1">
                                     Delete
                                 </button>
                             </center>

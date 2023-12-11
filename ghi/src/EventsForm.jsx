@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom'
-import './EventStyle.css';
 
 const EventsForm = ({ token, userData, fetchData }) => {
     const [formData, setFormData] = useState({
@@ -19,7 +18,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
 
         const bodyData = {
             ...formData,
-            image_url: formData.image_url.trim() !== '' ? formData.image_url : '',
+            image_url: formData.image_url.trim() !== '' ? formData.image_url : 'https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg',
         }
 
         const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events`, {
@@ -65,6 +64,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
                 hosted_by: ''
             })
             window.alert("Successfully created Event!")
+            window.location.href = `${process.env.PUBLIC_URL}/events`
         }
         else {
             throw new Error('Response did not return ok');
@@ -121,10 +121,11 @@ const EventsForm = ({ token, userData, fetchData }) => {
         <>
         <br></br>
         <center>
-        <h2> Create Event </h2>
-        <div className="card text-bg-light mb-3" style={{ width: "25rem" }}>
+        <h1> Create Event </h1>
+
+        <div className="card text-bg-dark mb-3" style={{ width: "25rem" }}>
             <div className="card-body">
-                <form onSubmit={handleSubmit} id="create-event-form">
+                <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <input
                         className="form-control"
@@ -183,15 +184,15 @@ const EventsForm = ({ token, userData, fetchData }) => {
                         onChange={handleFormChange}
                     />
                 </div>
-
-                <button className="btn btn-success mb-2" type="submit">
+                
+                <button className="btn btn-danger mb-2" type="submit">
                     Create
                 </button>
 
                 <br></br>
 
                 <Link to='/events/'>
-                    <button className="btn btn-primary">
+                    <button className="btn btn-secondary">
                         Return to Events
                     </button>
                 </Link>

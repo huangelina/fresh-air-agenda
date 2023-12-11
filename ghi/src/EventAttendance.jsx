@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
-
-
 const EventAttendance = ({ token, userData }) => {
 
     const [attendance, setAttendance] = useState([]);
     const { id } = useParams();
     const [event, setEvent] = useState([]);
-    const isAttending = attendance.some((attendee) => attendee.user_id === userData.id);
 
     const getAttendanceData = async () => {
         if (token) {
@@ -19,6 +16,7 @@ const EventAttendance = ({ token, userData }) => {
 
                     const filteredAttendance = attendanceList.filter((attendee) => attendee.event_id === parseInt(id));
                     setAttendance((filteredAttendance));
+
                 }
                 else {
                     throw new Error('Response did not return ok');
@@ -61,7 +59,11 @@ const EventAttendance = ({ token, userData }) => {
     }, [token])
 
     const handleAddAttendee = async () => {
-
+    
+        if (event.created_by === userData.id || attendance.some((attendee) => attendee.user_id === userData.id)) {
+            window.alert("You are already registered for this event!");
+            return; 
+        }
         const attendeesData = {
             user_id: userData.id,
             event_id: id,
@@ -78,14 +80,23 @@ const EventAttendance = ({ token, userData }) => {
         });
 
         if (attendees_response.ok) {
-            window.location.reload();
             window.alert("Successfully registered for Event!")
+            window.location.reload();
         }
 
     }
 
     const handleDelete = async () => {
         const userToDelete = attendance.find(obj => obj.user_id === userData.id);
+       
+        if (event.created_by === userData.id) {
+            window.alert("Host cannot withdraw from event! You may delete the event from the event page if necessary.");
+            return; 
+        }
+        else if (!(attendance.some((attendee) => attendee.user_id === userData.id))) {
+            window.alert("Cannot withdraw from an event you are not registered for!")
+            return;
+        }
 
         if (token && userData.id === userToDelete.user_id) {
             const response = await fetch(`${process.env.REACT_APP_API_HOST}/attendance/${userToDelete.id}`, {
@@ -112,50 +123,50 @@ const EventAttendance = ({ token, userData }) => {
 
     return (
         <>
-        <center>
-            <h1>Attendees</h1>
-            <br></br>
-            <ol className="list-group" style={{ maxWidth:'500px'}}>
-                {attendance.map(attendee => (
-                    <div key={attendee.id}>
-                    <Link to={`/users/${attendee.user_id}`}>
+            <center>
+                <h1>Attendees</h1>
+            </center>
+                <br></br>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                <ol className="list-group list-group-numbered">
+                    {attendance.map(attendee => (
+                        <li key={attendee.id} className="list-group-item" style={{ borderColor: '#000000'}}>
+                            <Link to={`/users/${attendee.user_id}`}>
+                                <button
+                                    type="button"
+                                    className="btn btn-link"
+                                    key={attendee.id}>
+                                    {attendee.user_name}
+                                </button>
+                            </Link>
+                        </li>
+                    ))}
+                </ol>
+                </div>
+                <br></br>
+                <center>
+                    <button
+                        onClick={() => handleAddAttendee()}
+                        className="btn btn-danger m-1">
+                        Register
+                    </button>
+
+                    <button
+                        onClick={() => handleDelete()}
+                        className="btn btn-secondary m-1">
+                        Withdraw
+                    </button>
+
+                    <br></br>
+
+                    <Link to='/events/'>
                         <button
-                            type="button"
-                            className="list-group-item list-group-item-action list-group-item-success"
-                            style={{ borderColor: '#000000'}}
-                            key={attendee.id}>
-                                {attendee.user_name}
+                            className="mt-2"
+                            disabled={!(token)}>
+                            Return to Events
                         </button>
                     </Link>
-                    </div>
-            ))}
-            </ol>
-            <br></br>
-
-            <button
-                onClick={() => handleAddAttendee()}
-                className="btn btn-info m-1"
-                disabled={!(token) || (userData.id === event.created_by) || isAttending}>
-                    {isAttending ? "Registered" : "Register"}
-            </button>
-
-            <button
-                onClick={() => handleDelete()}
-                className="btn btn-info m-1"
-                disabled={!(token && isAttending) || event.created_by === userData.id}>
-                    Withdraw
-            </button>
-
-            <br></br>
-            <br></br>
-
-            <Link to='/events/'>
-                <button
-                    disabled={!(token)}>
-                    Return to Events
-                </button>
-            </Link>
-        </center>
+                </center>
         </>
     )
 }
