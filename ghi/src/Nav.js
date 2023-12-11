@@ -24,7 +24,6 @@ function Nav({ userData }) {
     function signout() {
         logout();
         navigate("/login");
-        window.location.reload();
     }
 // Conditional rendering of Nav based on log in status
 if (isLoggedIn) {

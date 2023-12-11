@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 const EventAttendance = ({ token, userData }) => {
 
     const [attendance, setAttendance] = useState([]);
     const { id } = useParams();
     const [event, setEvent] = useState([]);
+    const navigate = useNavigate();
 
     let userDataLoading = null;
-    
+
     if (!userData) {
         userDataLoading = true
     }
@@ -69,10 +70,10 @@ const EventAttendance = ({ token, userData }) => {
     }, [token])
 
     const handleAddAttendee = async () => {
-    
+
         if (event.created_by === userData.id || attendance.some((attendee) => attendee.user_id === userData.id)) {
             window.alert('You are already registered for this event!');
-            return; 
+            return;
         }
         const attendeesData = {
             user_id: userData.id,
@@ -91,17 +92,17 @@ const EventAttendance = ({ token, userData }) => {
 
         if (attendees_response.ok) {
             window.alert('Successfully registered for Event!')
-            window.location.reload();
+            navigate('/events')
         }
 
     }
 
     const handleDelete = async () => {
         const userToDelete = attendance.find(obj => obj.user_id === userData.id);
-       
+
         if (event.created_by === userData.id) {
             window.alert('Host cannot withdraw from event! You may delete the event from the event page if necessary.');
-            return; 
+            return;
         }
         else if (!(attendance.some((attendee) => attendee.user_id === userData.id))) {
             window.alert('Cannot withdraw from an event you are not registered for!')
@@ -119,7 +120,7 @@ const EventAttendance = ({ token, userData }) => {
 
             if(response.ok) {
                 window.alert('Successfully withdrew from Event!')
-                window.location.reload();
+                navigate("/events")
             }
             else {
                 throw new Error('Response did not return ok');
@@ -159,10 +160,10 @@ const EventAttendance = ({ token, userData }) => {
                                         alt={`Avatar of ${attendee.user_name}`}
                                         style={{ width: '40px', height: '40px', marginRight: '10px', borderRadius: '50%' }}
                                     />
-                                </Link>               
+                                </Link>
                                 <span key={attendee.id} style={{fontSize: "20px"}}>
                                     {attendee.user_name}
-                                </span>                              
+                                </span>
                             </li>
                         ))}
                     </ol>

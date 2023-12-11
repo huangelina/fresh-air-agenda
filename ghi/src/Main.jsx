@@ -22,7 +22,7 @@ function Main({ token, userData, events, userTimelogs, fetchData }) {
 
     async function fetchWeather() {
         if (userData.location) {
-            const url = `http://api.openweathermap.org/geo/1.0/direct?q=${userData.location}&limit=1&appid=${OPEN_WEATHER_API_KEY}`
+            const url = `https://api.openweathermap.org/geo/1.0/direct?q=${userData.location}&limit=1&appid=${OPEN_WEATHER_API_KEY}`
             const response = await fetch(url)
             if (response.ok) {
                 const data = await response.json();

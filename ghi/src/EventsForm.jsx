@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const EventsForm = ({ token, userData, fetchData }) => {
     const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
         created_by: '',
         hosted_by: ''
     })
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -64,7 +66,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
                 hosted_by: ''
             })
             window.alert('Successfully created Event!')
-            window.location.href = `${process.env.PUBLIC_URL}/events`
+            navigate("/events")
         }
         else {
             throw new Error('Response did not return ok');
@@ -184,7 +186,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
                         onChange={handleFormChange}
                     />
                 </div>
-                
+
                 <button className="btn btn-danger mb-2" type="submit">
                     Create
                 </button>

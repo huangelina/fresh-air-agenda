@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const EventsList = ({ token, userData, events, fetchData }) => {
     let userDataLoading = null;
-    
+    const navigate = useNavigate();
+
     if (!userData) {
         userDataLoading = true
     }
@@ -14,7 +15,7 @@ const EventsList = ({ token, userData, events, fetchData }) => {
     const handleDelete = async (event) => {
         if (token && event.created_by === userData.id) {
             const confirmDelete = window.confirm('Are you sure you want to delete this event?');
-            
+
             if (confirmDelete) {
                 await fetch(`${process.env.REACT_APP_API_HOST}/events/${event.id}/attendance`, {
                     method: 'DELETE',
@@ -53,7 +54,7 @@ const EventsList = ({ token, userData, events, fetchData }) => {
 
     const updateClick = async (event) => {
         if (token && event.created_by === userData.id) {
-            window.location.href = `${process.env.PUBLIC_URL}/events/${event.id}`;
+           navigate(`/events/${event.id}`)
         }
         else {
             window.alert('Only the host can update their event!')
@@ -81,13 +82,13 @@ const EventsList = ({ token, userData, events, fetchData }) => {
                             <center>
                                 {token ? (
                                     <Link to="/events/new">
-                                        <button 
+                                        <button
                                             className="btn btn-primary border border-dark m-3">
                                                 Create Event
                                         </button>
                                     </Link>
                                 ) : (
-                                    <button 
+                                    <button
                                         className="btn btn-primary border border-dark m-3" disabled>
                                             Create Event
                                     </button>
@@ -118,7 +119,7 @@ const EventsList = ({ token, userData, events, fetchData }) => {
                                                 Attendees
                                         </button>
                                     </Link>
-        
+
                                     <button
                                         onClick={() => updateClick(event)}
                                         className="btn btn-danger border border-dark m-1"

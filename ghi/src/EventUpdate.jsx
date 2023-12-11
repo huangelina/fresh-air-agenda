@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 const EventUpdate = ({ token, userData, fetchData }) => {
     const { id } = useParams();
@@ -10,6 +10,7 @@ const EventUpdate = ({ token, userData, fetchData }) => {
         image_url: '',
         description: '',
     });
+    const navigate = useNavigate();
 
     const getEventData = async () => {
         if (token) {
@@ -56,7 +57,7 @@ const EventUpdate = ({ token, userData, fetchData }) => {
                 if (response.ok) {
                     fetchData();
                     window.alert('Successfully updated Event!')
-                    window.location.href = `${process.env.PUBLIC_URL}/events`
+                    navigate("/events")
                 }
                 else {
                     throw new Error('Response did not return ok');
@@ -76,7 +77,7 @@ const EventUpdate = ({ token, userData, fetchData }) => {
     return (
         <>
         <br></br>
-        <center> <h1>Update Event</h1> 
+        <center> <h1>Update Event</h1>
 
         <br></br>
 
