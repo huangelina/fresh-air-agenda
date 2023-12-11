@@ -163,8 +163,8 @@ function Main({ token, userData, events, userTimelogs, fetchData }) {
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '25px' }}>
                         <div style={{ boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)', backgroundColor: '#ffffff', padding: '30px', borderRadius: '35px', marginRight: '25px', flex: 2}}>
                             <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Today is {formattedLongDate}</p>
-                            <p style={{ marginBottom: '5px' }}>Your goal is <span style={{ fontWeight: 'bold', fontSize: '1em' }}>{totalHoursForGoal}</span> hr <span style={{ fontWeight: 'bold', fontSize: '1em' }}>{totalRemainingMinutesForGoal}</span> min</p>
-                            <p style={{ marginBottom: '5px' }}><span style={{ fontWeight: 'bold', fontSize: '2em' }}>{totalHours}</span> hr <span style={{ fontWeight: 'bold', fontSize: '2em' }}>{totalRemainingMinutes}</span> min spent getting fresh air</p>
+                            <p style={{ marginBottom: '5px' }}>Your goal today is <span style={{ fontWeight: 'bold', fontSize: '1em' }}>{totalHoursForGoal}</span> hr <span style={{ fontWeight: 'bold', fontSize: '1em' }}>{totalRemainingMinutesForGoal}</span> min</p>
+                            <p style={{ marginBottom: '5px' }}><span style={{ fontWeight: 'bold', fontSize: '2em' }}>{totalHours}</span> hr <span style={{ fontWeight: 'bold', fontSize: '2em' }}>{totalRemainingMinutes}</span> min spent getting fresh air today</p>
                         </div>
                         <div style={{ boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)', backgroundColor: '#ffffff', padding: '30px', borderRadius: '35px', marginRight: '25px', flex: 2}}>
                             <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>My events</p>
@@ -183,7 +183,8 @@ function Main({ token, userData, events, userTimelogs, fetchData }) {
                         </div>
                     </div>
                 </>
-                    <div style={{ boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)', backgroundColor: '#ffffff', padding: '30px', borderRadius: '35px' }}>
+                    <div style={{ boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)', backgroundColor: '#ffffff', paddingTop: '20px', paddingLeft: "30px", paddingRight: '30px', borderRadius: '35px' }}>
+                        <h2 style={{ paddingLeft: '10px' }}>Today's Log</h2>
                         {todaysLog && (
                             <>
                             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
@@ -197,7 +198,7 @@ function Main({ token, userData, events, userTimelogs, fetchData }) {
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#5adbb5',
-                                        border: 'none',
+                                        border: '3px solid #4ACBA5',
                                         padding: '10px',
                                         borderRadius: '20px'
                                     }}
@@ -205,40 +206,40 @@ function Main({ token, userData, events, userTimelogs, fetchData }) {
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#5adbb5',
-                                        border: 'none',
+                                        border: '3px solid #4ACBA5',
                                         padding: '10px',
                                         borderRadius: '20px'
                                     }} onClick={() => timeChange(15)}>+ 15 min</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#5adbb5',
-                                        border: 'none',
+                                        border: '3px solid #4ACBA5',
                                         padding: '10px',
                                         borderRadius: '20px'
                                     }} onClick={() => timeChange(5)}>+ 5 min</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#EBEDEF',
-                                        border: 'none',
+                                        border: '3px solid #D7DDE3',
                                         padding: '10px',
                                         borderRadius: '20px'
                                     }} onClick={() => timeChange(-5)}>- 5 min</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#EBEDEF',
-                                        border: 'none',
+                                        border: '3px solid #D7DDE3',
                                         padding: '10px',
                                         borderRadius: '20px'
                                     }} onClick={() => timeChange(-15)}>- 15 min</button>
                                     <button style={{
                                         margin: '5px',
                                         backgroundColor: '#EBEDEF',
-                                        border: 'none',
+                                        border: '3px solid #D7DDE3',
                                         padding: '10px',
                                         borderRadius: '20px'
                                     }} onClick={() => timeChange(-60)}>- 1 hr</button>
                                 </div>
-                                </div>
+                            </div>
                             </>
                         )}
                     </div>

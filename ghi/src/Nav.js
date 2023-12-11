@@ -25,7 +25,7 @@ function Nav({ userData }) {
 
 
     return (
-        <nav className="navbar navbar-expand-lg" style={{backgroundColor: '#9eadbd'}}>
+        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#ffffff', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.1)', borderRadius: '35px', margin: '25px' }}>
             <NavLink className="nav-link ps-3 " to="/">
                 <img src="logo-color1.png" alt="" height={50} className="rounded-5 border border-white"></img>
             </NavLink>
@@ -33,12 +33,12 @@ function Nav({ userData }) {
                 <li className="nav-item active">
                 </li>
                     <li>
-                        <NavLink className="nav-link ps-4 " to="/metrics">
+                        <NavLink className="nav-link ps-4 " to="/metrics" style={{ fontWeight: 'bold', fontSize: '1em' }}>
                             Metrics
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink className="nav-link ps-4" to="/events">
+                        <NavLink className="nav-link ps-4" to="/events" style={{ fontWeight: 'bold', fontSize: '1em' }}>
                             Events
                         </NavLink>
                     </li>
