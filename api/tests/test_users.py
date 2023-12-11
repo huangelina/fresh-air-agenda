@@ -1,7 +1,7 @@
 
 from fastapi.testclient import TestClient
 from main import app
-from queries.users import UserQueries, UserOut
+from queries.users import UserQueries, UserIn, UserOut
 from authenticator import authenticator
 
 
@@ -23,6 +23,22 @@ class EmptyUserQueries:
             goal=0,
             avatar_picture="string",
             bio="string")
+
+    def update(self,
+               id: int,
+               user: UserIn,
+               hashed_password: str) -> UserOut:
+        return UserOut(
+            id=1,
+            first="string",
+            last="string",
+            username="string",
+            email="string",
+            location="string",
+            goal=0,
+            avatar_picture="string",
+            bio="string"
+        )
 
 
 def fake_get_current_account_data():
@@ -62,6 +78,44 @@ def test_get_one_user():
                              ] = fake_get_current_account_data
     app.dependency_overrides[UserQueries] = EmptyUserQueries
     response = client.get("/users/1")
+    app.dependency_overrides = {}
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "first": "string",
+        "last": "string",
+        "username": "string",
+        "email": "string",
+        "location": "string",
+        "goal": 0,
+        "avatar_picture": "string",
+        "bio": "string"
+    }
+
+
+def test_update_user():
+    id = 1
+    app.dependency_overrides[UserQueries] = EmptyUserQueries
+    app.dependency_overrides[authenticator.get_current_account_data
+                             ] = fake_get_current_account_data
+
+    response = client.put(
+        f"users/{id}",
+        json={
+            "id": 1,
+            "first": "string",
+            "last": "string",
+            "username": "string",
+            "password": "string",
+            "email": "string",
+            "location": "string",
+            "goal": 0,
+            "avatar_picture": "string",
+            "bio": "string"
+        }
+    )
+
     app.dependency_overrides = {}
 
     assert response.status_code == 200
