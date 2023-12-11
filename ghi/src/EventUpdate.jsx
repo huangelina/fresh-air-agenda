@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 
 const EventUpdate = ({ token, userData, fetchData }) => {
     const { id } = useParams();
@@ -16,7 +16,7 @@ const EventUpdate = ({ token, userData, fetchData }) => {
             try {
                 const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
-                    credentials: "include",
+                    credentials: 'include',
                 });
                 if (event_response.ok) {
                     const eventData = await event_response.json();
@@ -55,7 +55,7 @@ const EventUpdate = ({ token, userData, fetchData }) => {
 
                 if (response.ok) {
                     fetchData();
-                    window.alert("Successfully updated Event!")
+                    window.alert('Successfully updated Event!')
                     window.location.href = `${process.env.PUBLIC_URL}/events`
                 }
                 else {
@@ -78,7 +78,9 @@ const EventUpdate = ({ token, userData, fetchData }) => {
         <br></br>
         <center> <h1>Update Event</h1> 
 
-        <div className="card text-bg-dark mb-3" style={{ width: "25rem"}}>
+        <br></br>
+
+        <div className="card text-bg-dark mb-3" style={{ width: "45rem"}}>
             <div className="card-body">
             {event && (
                 <form onSubmit={handleDataChange}>

@@ -3,9 +3,10 @@ Week 5 (Dec 4 - Dec 8)
 
 During week 5, I worked on finishing up the events pages functionalities and starting on writing CSS
 for the pages. I also had to make sure the pipeline errors and warnings all passed before merging 
-my code into main. There were times when I would be stuck on a single problem in the code for long 
-periods but I was able use resources on the Internet as well as my teammates' help to fix them
-without too much of a hassle. No notable blockers this week.
+my code into main. I wrote a unit test for get all events to test functionality of the endpoint and 
+will continue to write more. There were times when I would be stuck on a single problem in the code 
+for long periods but I was able use resources on the Internet as well as my teammates' help to fix 
+them without too much of a hassle. No notable blockers this week.
 
 -----------------------------------------------------------------------------------------------------
 

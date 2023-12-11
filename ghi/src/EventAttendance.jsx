@@ -1,11 +1,21 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 
 const EventAttendance = ({ token, userData }) => {
 
     const [attendance, setAttendance] = useState([]);
     const { id } = useParams();
     const [event, setEvent] = useState([]);
+
+    let userDataLoading = null;
+    
+    if (!userData) {
+        userDataLoading = true
+    }
+    else {
+        userDataLoading = false
+    }
+
 
     const getAttendanceData = async () => {
         if (token) {
@@ -34,7 +44,7 @@ const EventAttendance = ({ token, userData }) => {
             try {
                 const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
-                    credentials: "include",
+                    credentials: 'include',
                 });
                 if (event_response.ok) {
                     const eventData = await event_response.json();
@@ -61,7 +71,7 @@ const EventAttendance = ({ token, userData }) => {
     const handleAddAttendee = async () => {
     
         if (event.created_by === userData.id || attendance.some((attendee) => attendee.user_id === userData.id)) {
-            window.alert("You are already registered for this event!");
+            window.alert('You are already registered for this event!');
             return; 
         }
         const attendeesData = {
@@ -80,7 +90,7 @@ const EventAttendance = ({ token, userData }) => {
         });
 
         if (attendees_response.ok) {
-            window.alert("Successfully registered for Event!")
+            window.alert('Successfully registered for Event!')
             window.location.reload();
         }
 
@@ -90,11 +100,11 @@ const EventAttendance = ({ token, userData }) => {
         const userToDelete = attendance.find(obj => obj.user_id === userData.id);
        
         if (event.created_by === userData.id) {
-            window.alert("Host cannot withdraw from event! You may delete the event from the event page if necessary.");
+            window.alert('Host cannot withdraw from event! You may delete the event from the event page if necessary.');
             return; 
         }
         else if (!(attendance.some((attendee) => attendee.user_id === userData.id))) {
-            window.alert("Cannot withdraw from an event you are not registered for!")
+            window.alert('Cannot withdraw from an event you are not registered for!')
             return;
         }
 
@@ -108,7 +118,7 @@ const EventAttendance = ({ token, userData }) => {
             });
 
             if(response.ok) {
-                window.alert("Successfully withdrew from Event!")
+                window.alert('Successfully withdrew from Event!')
                 window.location.reload();
             }
             else {
@@ -120,55 +130,70 @@ const EventAttendance = ({ token, userData }) => {
         }
     }
 
-
-    return (
-        <>
-            <center>
-                <h1>Attendees</h1>
-            </center>
-                <br></br>
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                <ol className="list-group list-group-numbered">
-                    {attendance.map(attendee => (
-                        <li key={attendee.id} className="list-group-item" style={{ borderColor: '#000000'}}>
-                            <Link to={`/users/${attendee.user_id}`}>
-                                <button
-                                    type="button"
-                                    className="btn btn-link"
-                                    key={attendee.id}>
-                                    {attendee.user_name}
-                                </button>
-                            </Link>
-                        </li>
-                    ))}
-                </ol>
-                </div>
-                <br></br>
+    if (userDataLoading === false) {
+        return (
+            <>
                 <center>
-                    <button
-                        onClick={() => handleAddAttendee()}
-                        className="btn btn-danger m-1">
-                        Register
-                    </button>
-
-                    <button
-                        onClick={() => handleDelete()}
-                        className="btn btn-secondary m-1">
-                        Withdraw
-                    </button>
-
+                    <h1>Attendees</h1>
+                </center>
                     <br></br>
 
-                    <Link to='/events/'>
+                <div style={{ marginLeft: "70px", marginRight: "60px", marginBottom: "35px"}}>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: "25px" }}>
+                        <div style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.1)", backgroundColor: "#ffffff", padding: "30px", borderRadius: "35px", marginRight: "25px", flex: 2}}>
+                            <p style={{ fontWeight: "bold", marginBottom: "5px" }}>This is a list of all of the attendees for the event: {event.name}</p>
+                            <p style={{ marginBottom: "5px" }}>The host of the event is always the first attendee of the event. </p>
+                            <p style={{ marginBottom: "5px" }}>Click <u>Register</u> to attend the event or <u>Withdraw</u> to remove your participation from the event!</p>
+                            <p style={{ marginBottom: "5px" }}>Click on the icon next to the attendee's name to view their profile!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style={{ justifyContent: "center", marginLeft: "300px", marginRight: "300px"}}>
+                    <ol className="list-group list-group-numbered" style={{fontSize: "20px"}}>
+                        {attendance.map(attendee => (
+                            <li key={attendee.id} className="list-group-item" style={{ borderColor: "#000000"   , display: "flex" }}>
+                                <Link to={`/users/${attendee.user_id}`}>
+                                    <img
+                                        src="https://cdn2.iconfinder.com/data/icons/instagram-outline/19/11-512.png"  // Assuming userData.avatar is the URL of the avatar image
+                                        alt={`Avatar of ${attendee.user_name}`}
+                                        style={{ width: '40px', height: '40px', marginRight: '10px', borderRadius: '50%' }}
+                                    />
+                                </Link>               
+                                <span key={attendee.id} style={{fontSize: "20px"}}>
+                                    {attendee.user_name}
+                                </span>                              
+                            </li>
+                        ))}
+                    </ol>
+                    </div>
+                    <br></br>
+                    <center>
                         <button
-                            className="mt-2"
-                            disabled={!(token)}>
-                            Return to Events
+                            onClick={() => handleAddAttendee()}
+                            className="btn btn-danger m-1">
+                            Register
                         </button>
-                    </Link>
-                </center>
-        </>
-    )
+
+                        <button
+                            onClick={() => handleDelete()}
+                            className="btn btn-secondary m-1">
+                            Withdraw
+                        </button>
+
+                        <br></br>
+
+                        <Link to='/events/'>
+                            <button
+                                className="mt-2"
+                                disabled={!(token)}>
+                                Return to Events
+                            </button>
+                        </Link>
+                    </center>
+            </>
+        )
+    }
 }
 
 export default EventAttendance;

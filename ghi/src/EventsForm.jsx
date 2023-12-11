@@ -22,7 +22,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
         }
 
         const event_response = await fetch(`${process.env.REACT_APP_API_HOST}/events`, {
-            method: "POST",
+            method: 'POST',
             body: JSON.stringify(bodyData),
             headers: {
                 'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
         };
 
         const attendees_response = await fetch(`${process.env.REACT_APP_API_HOST}/attendance`, {
-            method: "POST",
+            method: 'POST',
             body: JSON.stringify(attendeesData),
             headers: {
                 'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
                 created_by: '',
                 hosted_by: ''
             })
-            window.alert("Successfully created Event!")
+            window.alert('Successfully created Event!')
             window.location.href = `${process.env.PUBLIC_URL}/events`
         }
         else {
@@ -76,27 +76,27 @@ const EventsForm = ({ token, userData, fetchData }) => {
         const value = e.target.value;
         const inputName = e.target.name;
 
-        if (inputName === "time") {
+        if (inputName === 'time') {
             const timeArray = value.split(':');
             let hours = parseInt(timeArray[0]);
             const minutes = timeArray[1];
             let period;
 
-            if (value.includes("AM")) {
-                period = "AM";
+            if (value.includes('AM')) {
+                period = 'AM';
             }
-            else if (value.includes("PM")) {
-                period = "PM";
+            else if (value.includes('PM')) {
+                period = 'PM';
             }
 
             if (hours < 10) {
                 hours = `0${hours}`;
             }
 
-            if (period === "PM" && hours !== 12) {
+            if (period === 'PM' && hours !== 12) {
                 hours += 12;
             }
-            else if (period === "AM" && hours === 12) {
+            else if (period === 'AM' && hours === 12) {
                 hours = 0;
             }
 
@@ -123,7 +123,7 @@ const EventsForm = ({ token, userData, fetchData }) => {
         <center>
         <h1> Create Event </h1>
 
-        <div className="card text-bg-dark mb-3" style={{ width: "25rem" }}>
+        <div className="card text-bg-dark mb-3" style={{ width: "45rem"}}>
             <div className="card-body">
                 <form onSubmit={handleSubmit}>
                 <div className="mb-3">
