@@ -1,3 +1,27 @@
+## December 11, 2023
+
+This week I worked on:
+
+* Prop Drilling
+* API & Frontend URL Replacement
+* Timelog Unit Testing
+* User Unit Testing
+
+At the beginning of the week I started by refactoring
+the React components to use prop drilling and reduce
+the number of fetch requests made. During this process
+I removed direct references to localhost:8000 or
+localhost:3000 for the environment variable for the
+React API Host and Public URL respectively.
+
+After all functionality was complete and refactored
+I wrote a unit test for the get users' timelogs
+endpoint, as well as for the update user data endpoint.
+
+Throughout the week I was troubleshooting the full
+stack deployment to ensure our application remained
+functionally deployed.
+
 ## December 4, 2023
 
 This week I worked on:
